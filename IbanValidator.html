@@ -1,0 +1,317 @@
+<html>
+<head>
+
+<title>Validate an IBAN</title>
+
+<style>
+
+body {
+
+	background-color: #96D38D;
+}
+
+.div {
+
+	margin: 100px;
+  
+}
+
+.headDiv {
+
+	width: 550px;
+}
+
+.div h1 {
+
+	font-size: 60px;
+	font-family: arial;
+	
+
+
+}
+
+
+
+.movedBit {
+
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  font-family: arial;
+  
+}
+
+.letters {
+
+
+  font-size: 20px;
+  font-family: arial;
+  
+}
+
+.letCol {
+
+  color: white;
+  font-weight: bold;
+   font-size: 20px;
+  font-family: arial;
+}
+
+.numbers {
+
+
+  font-size: 20px;
+  font-family: arial;
+  
+}
+
+.numCol {
+
+  color: white;
+  font-weight: bold;
+   font-size: 20px;
+  font-family: arial;
+}
+
+.equals {
+
+
+  font-size: 20px;
+  font-family: arial;
+  
+}
+
+.results h2 {
+
+  font-size: 40px;
+  font-family: arial;
+  
+
+
+}
+
+.longNum {
+
+font-size: 20px;
+  font-family: arial;
+
+}
+
+.mod97 {
+
+font-size: 20px;
+  font-family: arial;
+
+}
+
+.Explanation {
+
+  font-size: 20px;
+  font-family: arial;
+  
+
+
+}
+
+.logo {
+
+	height: 70px;
+	float: left;
+	
+}
+
+
+.input {
+    padding: 12px 20px;
+    margin: 0px 0px;
+    display: inline-block;
+    border: 2px solid #19710B;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+
+.button {
+    background-color: #19710B; /* Green */
+    border: none;
+    color: white;
+    margin: 0px 20px;
+    padding: 15px 32px;
+    border-radius: 4px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.button:hover span {
+  padding-right: 25px;
+}
+
+.button:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+</style>
+
+<script>
+
+function hover() {
+  document.getElementById("logo").src = "logos/logogreen2.png";
+}
+
+function stopHover() {
+  document.getElementById("logo").src = "logos/logogreen1.png";
+}
+
+function validate () {
+
+
+var inputedIban = document.getElementById("inputIban").value;
+
+var stringA = inputedIban.slice(0, 4);
+var stringB = inputedIban.slice(4, 40);
+
+var ibanUnknownCase = stringA + "" + stringB;
+var ibanUpperCase = ibanUnknownCase.toUpperCase();
+
+var fullStringUnknownCase = stringB + "" + stringA;
+var fullStringUpperCase = fullStringUnknownCase.toUpperCase();
+var finalString = "";
+
+document.getElementById("letters").innerHTML = "";
+document.getElementById("numbers").innerHTML = "";
+
+
+for (i = 0; i < fullStringUpperCase.length; i++){
+    
+    var inputChar = fullStringUpperCase.charAt(i);
+ 
+
+ 	if (inputChar != 0 && inputChar != 1 && inputChar != 2 && inputChar!= 3 && inputChar != 4 && inputChar != 5 & inputChar != 6 && inputChar != 7 && inputChar != 8 && inputChar != 9)  {
+
+	var code = fullStringUpperCase.charCodeAt(i) - 55;
+
+	finalString += code;
+
+  document.getElementById("letters").innerHTML += "<span class='letCol'>"+inputChar+"</span>";
+  document.getElementById("numbers").innerHTML += "<span class='numCol'>"+code+"</span>";
+
+
+	}
+
+	else {
+
+	finalString += inputChar;
+
+
+  document.getElementById("letters").innerHTML += inputChar;
+  document.getElementById("numbers").innerHTML += inputChar;
+
+	}
+
+}
+
+var part1 =  finalString.slice(0, 11);
+var part2 =  finalString.slice(11, 21);
+var part3 =  finalString.slice(21, 35);
+
+var modPart1 = part1 % 97;
+
+var modPart1And2 = (modPart1 + "" + part2) % 97;
+
+var modPart1And2And3 = (modPart1And2 + "" + part3) % 97;
+
+
+
+if (modPart1And2And3 == 1) {
+
+	document.getElementById("trueOrFalse").innerHTML = ibanUpperCase+" is a Valid IBAN!"
+  document.getElementById("movedBitPos1").innerHTML = stringA.toUpperCase();
+  document.getElementById("Explanation").innerHTML = stringB.toUpperCase()+" = "+stringB.toUpperCase();
+  document.getElementById("movedBitPos2").innerHTML = stringA.toUpperCase();
+  document.getElementById("equals1").innerHTML = " = ";
+  document.getElementById("longNum").innerHTML = finalString;
+  document.getElementById("equals2").innerHTML = " mod 97 = ";
+  document.getElementById("mod97").innerHTML = modPart1And2And3;
+
+}
+else if (new String(inputedIban).valueOf() == new String("").valueOf()){
+
+	window.alert("Nothing was entered! Try again!");
+  location.reload();
+
+}
+else {
+
+	document.getElementById("trueOrFalse").innerHTML = ibanUpperCase+" is not a Valid IBAN!"
+  document.getElementById("movedBitPos1").innerHTML = stringA.toUpperCase();
+  document.getElementById("Explanation").innerHTML = stringB.toUpperCase()+" = "+stringB.toUpperCase();
+  document.getElementById("movedBitPos2").innerHTML = stringA.toUpperCase();
+  document.getElementById("equals1").innerHTML = " = ";
+  document.getElementById("longNum").innerHTML = finalString;
+  document.getElementById("equals2").innerHTML = " mod 97 = ";
+  document.getElementById("mod97").innerHTML = modPart1And2And3;
+}
+
+
+
+
+}
+
+</script>
+</head>
+<body>
+
+<center>
+
+<div class="div">
+
+
+<div class="headDiv">
+<img id="logo" src="logos/logogreen1.png" onmouseout="stopHover();" onmouseover="hover();" class="logo" />
+
+<h1>
+ IBAN Validator</h1>
+
+</div>
+
+<input id="inputIban" class="input" placeholder="Type an International Bank Account Number here" style="width: 500px;" type="text">
+
+<button class="button" onclick="validate ();"><span>Validate </span></button>
+
+</div>
+
+<div class="results">
+
+<h2 id="trueOrFalse"></h2>
+
+<p><span class="movedBit" id="movedBitPos1"></span><span class="Explanation" id="Explanation"></span><span class="movedBit" id="movedBitPos2"></span></p>
+
+<p><span class="letters" id="letters"></span><span class="equals" id = "equals1"></span><span class="numbers" id="numbers"></span></p>
+
+<p><span class="longNum" id="longNum"></span><span class="equals" id = "equals2"></span><span class="mod97" id="mod97"></span></p>
+
+
+</div>
+
+</center>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<html>
+<head>
+<script>
+
+function whenType() {
+
+var txt = document.getElementById("userInput").value; 
+var numChars = txt.length;
+var numWords = 0;
+var currWord = ""; 
+
+
+for (var i=0; i<numChars; i++) {
+
+	var currLetter = txt.substr(i,1);
+	
+	if (currLetter==" ") { 
+
+	numWords = numWords + 1;
+
+	}
+	else {
+	
+	currWord += currLetter; 
+	
+	}
+
+}
+
+document.getElementById("charCount").innerHTML = numChars+" Characters";
+document.getElementById("wordCount").innerHTML = numWords + 1 +" Words";
+
+}
+
+</script>
+</head>
+<body>
+<textarea rows="20" cols="80" id='userInput' onkeyup="whenType();" value=""></textarea><br>
+
+<p id='charCount'>
+0 Characters
+</p>
+<p id='wordCount'>
+0 Words
+</p>
+
+</body>
+</html>

@@ -1,0 +1,748 @@
+
+<html>
+<head>
+
+<title>Create a Calendar</title>
+
+<script>
+
+var firstDay = 0;
+var date = 1;
+var days = 1;
+var daysString;
+var adminA = 0;
+var adminB = 0;
+var adminC = 0;
+
+
+function getCurrentDate () {
+
+var d = new Date();
+
+date = d.getDate();
+
+}
+
+function getFirstDay () {
+
+if (document.getElementById("dropDown").selectedIndex == 0) {
+
+firstDay = 0; // Monday
+
+}
+else if (document.getElementById("dropDown").selectedIndex == 1) {
+
+firstDay = 1; // Tuesday
+
+}
+else if (document.getElementById("dropDown").selectedIndex == 2) {
+
+firstDay = 2; // Wednesday
+
+}
+else if (document.getElementById("dropDown").selectedIndex == 3) {
+
+firstDay = 3; // Thursday
+
+}
+else if (document.getElementById("dropDown").selectedIndex == 4) {
+
+firstDay = 4; // Friday
+
+}
+else if (document.getElementById("dropDown").selectedIndex == 5) {
+
+firstDay = 5; // Saturday
+
+}
+else if (document.getElementById("dropDown").selectedIndex == 6) {
+
+firstDay = 6; // Sunday
+
+}
+
+}
+
+function getNumberOfDays() {
+
+daysString = document.getElementById("days").value; // Alphanumeric Value
+
+days = parseInt(daysString); // Converted Numeric Value
+
+}
+
+
+function createCalendar() {
+
+  getCurrentDate(); // Get Current Date
+
+  getFirstDay(); // Get 1st Day of Month
+
+  getNumberOfDays(); // Get Number of Days in Month
+  
+// Ensuring Number of Days is a Numeric Value between 1 and 31
+
+if (days > 36 || days < 1) {
+
+	window.alert("The number of days in the month must be between 1 and 36!");
+
+	document.getElementById("days").value = "";
+  location.reload();
+}
+else if (isNaN(daysString)) {
+
+  window.alert("Sorry! '"+daysString+"' is not a number! Please enter the number of days in the month!");
+  location.reload();
+
+}
+else if (daysString == "" || daysString == " " || daysString == "  ") {
+
+  window.alert("Please enter the number of days in the month!");
+  location.reload();
+
+}
+else {
+
+    // Un-hide Calendar
+
+     document.getElementById("calendarDiv").style.visibility = "visible";
+
+
+    // Un-hide Rows
+
+     document.getElementById("row3").style.visibility = "visible";
+     document.getElementById("row4").style.visibility = "visible";
+     document.getElementById("row5").style.visibility = "visible";
+     document.getElementById("row6").style.visibility = "visible";
+     document.getElementById("row7").style.visibility = "visible";
+
+
+    // Clear Calendar
+
+     var j = 1;
+
+      for (j = 1; j < 43; j++){
+
+      document.getElementById("cell"+j).innerHTML = ""; // Erase Cell Values
+      document.getElementById("cell"+j).setAttribute("class", "calendarDay"); // Erase Cell Stylings
+
+      }
+
+    // Admin Defaults
+
+    adminA = 0;
+    adminB = 0;
+    adminC = 0;
+
+    // Fill Calendar
+
+
+    if (firstDay == 0) { // Monday
+
+      var i = 1;
+
+      for (i = 1; i < days + 1; i++){
+
+      document.getElementById("cell"+i).innerHTML = i;
+
+          if (i == date) {
+
+              document.getElementById("cell"+i).setAttribute("class", "selectedDay");
+
+          }
+
+      }
+
+    }
+
+    else if (firstDay == 1) { // Tuesday
+
+      var i = 2;
+
+      for (i = 2; i < days + 2; i++){
+
+      document.getElementById("cell"+i).innerHTML = i-1;
+
+           if ((i-1) == date) {
+
+              document.getElementById("cell"+i).setAttribute("class", "selectedDay");
+
+          }
+
+      }
+
+    }
+
+    else if (firstDay == 2) { // Wednesday
+
+      var i = 3;
+
+      for (i = 3; i < days + 3; i++){
+
+      document.getElementById("cell"+i).innerHTML = i-2;
+
+           if ((i-2) == date) {
+
+              document.getElementById("cell"+i).setAttribute("class", "selectedDay");
+
+          }
+
+      }
+
+    }
+
+    else if (firstDay == 3) { // Thursday
+
+      var i = 4;
+
+      for (i = 4; i < days + 4; i++){
+
+      document.getElementById("cell"+i).innerHTML = i-3;
+
+           if ((i-3) == date) {
+
+              document.getElementById("cell"+i).setAttribute("class", "selectedDay");
+
+          }
+
+      }
+
+    }
+
+    else if (firstDay == 4) { // Friday
+
+      var i = 5;
+
+      for (i = 5; i < days + 5; i++){
+
+      document.getElementById("cell"+i).innerHTML = i-4;
+
+           if ((i-4) == date) {
+
+              document.getElementById("cell"+i).setAttribute("class", "selectedDay");
+
+          }
+
+      }
+
+    }
+
+    else if (firstDay == 5) { // Saturday
+
+      var i = 6;
+
+      for (i = 6; i < days + 6; i++){
+
+      document.getElementById("cell"+i).innerHTML = i-5;
+
+           if ((i-5) == date) {
+
+              document.getElementById("cell"+i).setAttribute("class", "selectedDay");
+
+          }
+
+      }
+
+    }
+
+    else if (firstDay == 6) { // Sunday
+
+      var i = 7;
+
+      for (i = 7; i < days + 7; i++){
+
+      document.getElementById("cell"+i).innerHTML = i-6;
+
+           if ((i-6) == date) {
+
+              document.getElementById("cell"+i).setAttribute("class", "selectedDay");
+
+          }
+
+      }
+
+    }
+
+
+
+    // Hide Unused Rows
+
+    if (document.getElementById("cell8").innerHTML == "") { // 1st Row in Use
+
+     document.getElementById("row3").style.visibility = "hidden";
+     document.getElementById("row4").style.visibility = "hidden";
+     document.getElementById("row5").style.visibility = "hidden";
+     document.getElementById("row6").style.visibility = "hidden";
+     document.getElementById("row7").style.visibility = "hidden";
+
+    }
+
+    if (document.getElementById("cell15").innerHTML == "") { // 1st and 2nd Row in Use
+
+
+     document.getElementById("row4").style.visibility = "hidden";
+     document.getElementById("row5").style.visibility = "hidden";
+     document.getElementById("row6").style.visibility = "hidden";
+     document.getElementById("row7").style.visibility = "hidden";
+
+
+    }
+
+    if (document.getElementById("cell22").innerHTML == "") { // 1st, 2nd and 3rd Row in Use
+
+
+     document.getElementById("row5").style.visibility = "hidden";
+     document.getElementById("row6").style.visibility = "hidden";
+     document.getElementById("row7").style.visibility = "hidden";
+
+
+
+    }
+    if (document.getElementById("cell29").innerHTML == "") { // 1st, 2nd, 3rd and 4th Row in Use
+
+
+     document.getElementById("row6").style.visibility = "hidden";
+     document.getElementById("row7").style.visibility = "hidden";
+
+
+    }
+
+    if (document.getElementById("cell36").innerHTML == "") { // 1st, 2nd, 3rd, 4th and 5th Row in Use
+
+     document.getElementById("row7").style.visibility = "hidden";
+
+
+    }
+
+     // Style Blank Cells in Rows 2 -- Messy (Look for a better way)
+
+     var l = 1;
+
+     for (l = 1; l < 8; l++){
+
+      var cellL = document.getElementById("cell"+l);
+
+      if (cellL.innerHTML == "") {
+
+          cellL.setAttribute("class", "emptyDay");
+
+      }
+
+     }
+
+    // Style Blank Cells in Rows 3 - 7
+
+    var g = 3;
+
+
+    for (g = 3; g < 8; g++){
+
+
+        var rowG = document.getElementById("row"+g);
+        var cellManipulator = g - 2;
+
+
+            var k = 1;
+
+              for (k = 1; k < 8; k++){
+
+                var cellK = document.getElementById("cell"+(k+(cellManipulator*7)));
+
+                    if((cellK.innerHTML == "") && (rowG.style.visibility == "visible")) {
+
+                                cellK.setAttribute("class", "emptyDay");
+
+                              }
+
+
+              }
+
+
+         }
+
+  }
+
+}
+
+function adminTues () {
+
+  adminA = 1;
+
+  adminControl();
+  
+}
+
+function adminThurs () {
+
+  adminB = 1;
+
+  adminControl();
+  
+}
+
+function adminSat () {
+
+  adminC = 1;
+
+  adminControl();
+  
+}
+
+function adminControl () {
+
+  var ending;
+
+  if (date == 1 || date == 21 || date == 31) {
+
+    ending = "st";
+
+  }
+
+  else if (date == 2 || date == 22 || date == 32) {
+
+    ending = "nd";
+
+  }
+
+   else if (date == 3 || date == 23 || date == 33) {
+
+    ending = "rd";
+
+  }
+
+  else {
+
+    ending = "th";
+
+  }
+
+  if (adminA == 1 && adminB == 1 && adminC == 1) {
+
+    window.alert("First Day = "+firstDay+"   Date = "+date+ending+"    Days = "+days);
+
+  }
+  
+}
+
+
+
+</script>
+
+<style>
+
+body {
+
+  background-color: #FFAAAA;
+
+}
+
+.setupDiv {
+
+  margin-top: 50px;
+  
+}
+
+.calendarDiv {
+
+  visibility: hidden;
+
+}
+
+.setupSubDiv {
+
+  margin-left: 200px;
+  
+}
+
+
+.setupDiv h1 {
+
+  font-size: 60px;
+  font-family: arial;
+  text-align: center;
+	
+}
+
+
+.logo {
+
+	height: 70px;
+	float: left;
+  margin-right: 20px;
+	
+}
+
+
+.input {
+
+  padding: 10px 10px;
+  margin: 0px 0px;
+  display: inline-block;
+  border: 2px solid #801515;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 20px;
+
+}
+
+
+.button {
+
+  background-color: #801515; 
+  border: none;
+  color: white;
+  margin: 20px 20px;
+  margin-left: 50px;
+  padding: 15px 32px;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+
+}
+
+.button span {
+
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+
+}
+
+.button span:after {
+
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+
+}
+
+.para {
+
+  font-size: 20px;
+  font-family: arial;
+  float: left;
+  margin-left: 50px;
+
+}
+
+.list {
+
+  font-size: 10px;
+  font-family: arial;
+  margin-left: 10px;
+
+}
+
+.button:hover span {
+
+  padding-right: 25px;
+
+}
+
+.button:hover span:after {
+
+  opacity: 1;
+  right: 0;
+
+}
+
+.select {
+ 
+  width: 170px;
+  padding: 5px  5px 5px;
+  font-size: 20px;
+  height: 50px;
+  -moz-appearance: none;
+  appearance: none;
+  border: 2px solid #801515;
+  border-radius: 4px;
+  box-sizing: border-box;
+
+}
+
+.calendar {
+
+  border-collapse: collapse;
+
+}
+
+.calendarDay{
+
+  background-color: white; 
+  color: black;
+  text-align: center; 
+  border: thick solid black;
+  font-family: arial;
+  height: 60px;
+  width: 100px;
+
+}
+
+.calendarHead {
+
+  background-color: #801515; 
+  color: white;
+  font-weight: bold;
+  text-align: center; 
+  border: thick solid black;
+  font-family: arial;
+  height: 40px;
+  width: 100px;
+
+}
+
+.selectedDay {
+
+  background-color: #D46A6A; 
+  color: white;
+  font-weight: bold;
+  text-align: center; 
+  border: thick solid black;
+  font-family: arial;
+  height: 60px;
+  width: 100px;
+
+}
+
+.emptyDay {
+
+  background-color: #CFB0B0; 
+  border: thick solid black;
+  height: 60px;
+  width: 100px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="setupDiv">
+
+<h1 id="heading">Create a Calendar</h1>
+
+  <div class="setupSubDiv">
+
+  	<p class="para">1st Day of the Month: 
+
+  		<select class="select" id ="dropDown">
+
+    			<option>Monday</option>
+    			<option>Tuesday</option>
+    			<option>Wednesday</option>
+    			<option>Thursday</option>
+    			<option>Friday</option>
+    			<option>Saturday</option>
+    			<option>Sunday</option>
+   
+  		</select>
+
+  	</p>
+
+  	<p class="para">Number of Days in the Month:
+
+  		<input id="days" maxlength="2" class="input" style="width: 50px;" type="text">
+
+  	</p>
+
+  <button class="button" onclick="createCalendar();"><span>Create Calendar</span></button>
+
+  </div>
+
+</div>
+
+  <center>
+
+  <div id="calendarDiv" class="calendarDiv">
+
+  <br>
+
+    <table class="calendar" border="1">
+
+    <tr id="row1">
+    <td class="calendarHead">Monday</td>
+    <td class="calendarHead" onclick="adminTues();" >Tuesday</td>
+    <td class="calendarHead">Wednesday</td>
+    <td class="calendarHead" onclick="adminThurs();">Thursday</td>
+    <td class="calendarHead">Friday</td>
+    <td class="calendarHead" onclick="adminSat();">Saturday</td>
+    <td class="calendarHead">Sunday</td>
+
+    </tr>
+
+    <tr id= "row2">
+    <td class="calendarDay" id="cell1"></td>
+    <td class="calendarDay" id="cell2"></td>
+    <td class="calendarDay" id="cell3"></td>
+    <td class="calendarDay" id="cell4"></td>
+    <td class="calendarDay" id="cell5"></td>
+    <td class="calendarDay" id="cell6"></td>
+    <td class="calendarDay" id="cell7"></td>
+    </tr>
+
+    <tr id= "row3">
+    <td class="calendarDay" id="cell8"></td>
+    <td class="calendarDay" id="cell9"></td>
+    <td class="calendarDay" id="cell10"></td>
+    <td class="calendarDay" id="cell11"></td>
+    <td class="calendarDay" id="cell12"></td>
+    <td class="calendarDay" id="cell13"></td>
+    <td class="calendarDay" id="cell14"></td>
+    </tr>
+
+    <tr id= "row4">
+    <td class="calendarDay" id="cell15"></td>
+    <td class="calendarDay" id="cell16"></td>
+    <td class="calendarDay" id="cell17"></td>
+    <td class="calendarDay" id="cell18"></td>
+    <td class="calendarDay" id="cell19"></td>
+    <td class="calendarDay" id="cell20"></td>
+    <td class="calendarDay" id="cell21"></td>
+    </tr>
+
+    <tr id= "row5">
+    <td class="calendarDay" id="cell22"></td>
+    <td class="calendarDay" id="cell23"></td>
+    <td class="calendarDay" id="cell24"></td>
+    <td class="calendarDay" id="cell25"></td>
+    <td class="calendarDay" id="cell26"></td>
+    <td class="calendarDay" id="cell27"></td>
+    <td class="calendarDay" id="cell28"></td>
+    </tr>
+
+    <tr id= "row6">
+    <td class="calendarDay" id="cell29"></td>
+    <td class="calendarDay" id="cell30"></td>
+    <td class="calendarDay" id="cell31"></td>
+    <td class="calendarDay" id="cell32"></td>
+    <td class="calendarDay" id="cell33"></td>
+    <td class="calendarDay" id="cell34"></td>
+    <td class="calendarDay" id="cell35"></td>
+    </tr>
+
+    <tr id= "row7">
+    <td class="calendarDay" id="cell36"></td>
+    <td class="calendarDay" id="cell37"></td>
+    <td class="calendarDay" id="cell38"></td>
+    <td class="calendarDay" id="cell39"></td>
+    <td class="calendarDay" id="cell40"></td>
+    <td class="calendarDay" id="cell41"></td>
+    <td class="calendarDay" id="cell42"></td>
+    </tr>
+
+    </table>
+
+  </div>
+
+  </center>
+
+</body>
+</html>
