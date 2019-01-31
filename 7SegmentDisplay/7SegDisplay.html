@@ -1,0 +1,333 @@
+<html>
+<head>
+
+<style>
+
+.div {
+
+	margin-top: 50px;
+}
+
+.div h1 {
+
+	font-size: 50px;
+	font-family: arial;
+	margin: 30px; 0px;
+	color: white;
+
+}
+
+.logo {
+
+	height: 70px;
+	float: left;
+	
+}
+
+.hoverSpan:hover {
+
+	color: #AA4C39;
+
+}
+
+.input {
+    padding: 12px 20px;
+    margin: 0px 0px;
+    display: inline-block;
+    border: 2px solid #AA4C39; 
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.headDiv {
+
+	width: 600px;
+}
+
+.button {
+    background-color: #AA4C39; 
+    border: none;
+    color: white;
+    margin: 0px 20px;
+    padding: 15px 32px;
+    border-radius: 4px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+}
+
+</style>
+
+
+<script>
+
+function hover() {
+  document.getElementById("logo").src = "../logos/logoorange2.png";
+}
+
+function stopHover() {
+  document.getElementById("logo").src = "../logos/logoorange1.png";
+}
+
+
+// Display Number on Button
+
+function showNum() {
+
+var disNum = (document.getElementById("txtBox").value);
+
+document.getElementById("numDisplay").innerHTML = "("+disNum+")";
+
+}
+
+
+function activateDisplay() {
+
+var numString = (document.getElementById("txtBox").value);
+var num = parseInt(numString);
+var hundIndex = 0;
+
+
+//Nothing Entered
+
+if (new String(numString).valueOf() == new String("").valueOf()) {
+
+	window.alert("Please enter a number!");
+	document.getElementById("numDisplay").innerHTML = "";
+
+	document.getElementById("display2").src = "null.png";
+	document.getElementById("display3").src = "null.png";
+	document.getElementById("display4").src = "null.png";
+
+
+
+}
+
+// Not a Number
+
+
+if (isNaN(numString)) {
+
+	window.alert("Sorry! '"+numString+"' is not a number, try again!");
+	document.getElementById("txtBox").value = "";
+	document.getElementById("numDisplay").innerHTML = "";
+
+	document.getElementById("display2").src = "null.png";
+	document.getElementById("display3").src = "null.png";
+	document.getElementById("display4").src = "null.png";
+}
+
+// Less than 100
+
+if (num < 100 && num >= 0) {
+
+	document.getElementById("display2").src = "null.png"; 
+}
+
+// Ensuring middle digit is 0 and not NULL
+
+if (num >= 100) {
+
+	hundIndex = 1;
+}
+
+// Greater than 1000
+
+if (num >= 1000) {
+
+	window.alert("Sorry! Too many digits, try again!");
+	document.getElementById("txtBox").value = "";
+	document.getElementById("numDisplay").innerHTML = "";
+
+	document.getElementById("display2").src = "null.png";
+	document.getElementById("display3").src = "null.png";
+	document.getElementById("display4").src = "null.png";
+}
+
+// Less than 0
+
+if (num < 0) {
+
+	window.alert("Sorry! You cannot enter a negative number, try again!");
+	document.getElementById("txtBox").value = "";
+	document.getElementById("numDisplay").innerHTML = "";
+
+	document.getElementById("display2").src = "null.png";
+	document.getElementById("display3").src = "null.png";
+	document.getElementById("display4").src = "null.png";
+}
+
+// Determining 1st Digit
+
+if (num >= 100 && num < 200) {
+
+
+	document.getElementById("display2").src = "1.png";
+	num = (num % 100);
+}
+if (num >= 200 && num < 300) {
+
+
+	document.getElementById("display2").src = "2.png";
+	num = (num % 200);
+}
+if (num >= 300 && num < 400) {
+
+
+	document.getElementById("display2").src = "3.png";
+	num = (num % 300);
+}
+if (num >= 400 && num < 500) {
+
+
+	document.getElementById("display2").src = "4.png";
+	num = (num % 400);
+}
+if (num >= 500 && num < 600) {
+
+
+	document.getElementById("display2").src = "5.png";
+	num = (num % 500);
+}
+if (num >= 600 && num < 700) {
+
+
+	document.getElementById("display2").src = "6.png";
+	num = (num % 600);
+}
+if (num >= 700 && num < 800) {
+
+
+	document.getElementById("display2").src = "7.png";
+	num = (num % 700);
+}
+if (num >= 800 && num < 900) {
+
+
+	document.getElementById("display2").src = "8.png";
+	num = (num % 800);
+}
+if (num >= 900 && num < 1000) {
+
+
+	document.getElementById("display2").src = "9.png";
+	num = (num % 900);
+}
+
+// Determining 2nd and 3rd Digits
+
+if (num < 10 && num >= 0 && hundIndex == 0) {
+
+
+	document.getElementById("display3").src = "null.png"; 
+	document.getElementById("display4").src = num+".png";
+}
+if (num < 10 && num >= 0 && hundIndex == 1) {
+
+
+	document.getElementById("display3").src = "0.png"; 
+	document.getElementById("display4").src = num+".png";
+}
+if (num >= 10 && num < 20) {
+
+
+	document.getElementById("display3").src = "1.png";
+	document.getElementById("display4").src = (num % 10)+".png";
+}
+if (num >= 20 && num < 30) {
+
+
+	document.getElementById("display3").src = "2.png";
+	document.getElementById("display4").src = (num % 10)+".png";
+}
+if (num >= 30 && num < 40) {
+
+
+	document.getElementById("display3").src = "3.png";
+	document.getElementById("display4").src = (num % 10)+".png";
+}
+if (num >= 40 && num < 50) {
+
+
+	document.getElementById("display3").src = "4.png";
+	document.getElementById("display4").src = (num % 10)+".png";
+}
+if (num >= 50 && num < 60) {
+
+	document.getElementById("display3").src = "5.png";
+	document.getElementById("display4").src = (num % 10)+".png";
+}
+if (num >= 60 && num < 70) {
+
+
+	document.getElementById("display3").src = "6.png";
+	document.getElementById("display4").src = (num % 10)+".png";
+}
+if (num >= 70 && num < 80) {
+
+
+	document.getElementById("display3").src = "7.png";
+	document.getElementById("display4").src = (num % 10)+".png";
+}
+if (num >= 80 && num < 90) {
+
+
+	document.getElementById("display3").src = "8.png";
+	document.getElementById("display4").src = (num % 10)+".png";
+}
+if (num >= 90 && num < 100) {
+
+
+	document.getElementById("display3").src = "9.png";
+	document.getElementById("display4").src = (num % 10)+".png";
+}
+
+}
+
+</script>
+
+</head>
+<body style="background-color: black;">
+
+<center>
+
+<div class="div">
+
+	<div class="headDiv">
+
+	<img id="logo" src="../logos/logoorange1.png" onmouseout="stopHover();" onmouseover="hover();" class="logo" />
+
+<h1><span class="hoverSpan">7</span> <span class="hoverSpan">S</span><span class="hoverSpan">e</span><span class="hoverSpan">g</span><span class="hoverSpan">m</span><span class="hoverSpan">e</span><span class="hoverSpan">n</span><span class="hoverSpan">t</span> <span class="hoverSpan">D</span><span class="hoverSpan">i</span><span class="hoverSpan">s</span><span class="hoverSpan">p</span><span class="hoverSpan">l</span><span class="hoverSpan">a</span><span class="hoverSpan">y</span></h1>
+
+</div>
+
+<!--  Entering Number -->
+
+
+<br>
+
+<input class="input" maxlength="3" onkeyup="showNum();" type="text" id="txtBox">
+
+<!-- Button (Activates Function) -->
+
+<button class="button" onclick="activateDisplay();">Display Number <span class="numDisplay" id="numDisplay"></span></button>
+
+<br>
+<br>
+<br>
+
+
+
+<!-- Display -->
+
+<img src="null.png"  style="height:300px;" id="display2"/>
+<img src="null.png"  style="height:300px;" id="display3"/>
+<img src="null.png"  style="height:300px;" id="display4"/>
+
+</div>
+
+</center>
+
+</body>
+</html>
