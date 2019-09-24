@@ -1,0 +1,1449 @@
+<html>
+
+<head>
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+<script src="wordsArray.js"></script>
+
+
+<title>Countdown</title>
+
+<script>
+
+// Arrays
+
+var Letters = [];
+var LettersCopy = [];
+var testLetters = [];
+var repeatedLetters = [];
+var allCombos = [];
+var matchWord = [];
+
+//Timer 
+
+var timerInputSeconds = 0;
+var timerInputMinutes = 0;
+var minutesToDisplay;
+var secondsToDisplay;
+var currentSeconds;
+var currentMinutes = 0;
+var interval;
+
+// Solution Words
+
+var longWord1 = "";
+var longWord2 = "";
+var longWord3 = "";
+var longWord4 = "";
+var longWord5 = "";
+var longWord6 = "";
+var longWord7 = "";
+
+// Tests and Counters
+
+var maxVowelCount = 5;
+var solutionTest = 0;
+var wordCounterForLoop = 58109;
+var matchWordCount = -1;
+var numberOfLetters = 9;
+var vowelCounter = 0;
+
+// Colour Schemes
+
+var vowelBG = "#577BA4";
+var consonantBG = "rgb(159, 227, 253)";
+
+// Keypress Simulators
+
+var downKeySim = 0;
+var upKeySim = 0;
+
+//Conundrum
+
+var chosenWord;
+var conunLength = 0;
+var capitalYN;
+
+// Cookies
+
+var numLettersString = "";
+var numVowelsString = "";
+
+function keypressUp (a) {
+
+  upKeySim = a;
+  
+  generateLetter(a);
+
+}
+
+function keypressDown (a) {
+
+  downKeySim = a;
+
+  generateLetter(a);
+
+}
+
+function onloadFunc () {
+
+numLettersString = getCookie("numLetters");
+
+if (numLettersString != "" && numLettersString != null){
+
+numberOfLetters = parseInt(numLettersString);
+
+}
+
+maxVowelsString = getCookie("maxVowels");
+
+if (maxVowelsString != "" && maxVowelsString != null){
+
+maxVowelCount = parseInt(maxVowelsString);
+
+}
+
+generateLetter(1);
+displayCells(numberOfLetters);
+document.getElementById("lettersRow").style.visibility = "visible";
+
+document.getElementById("lettersRange").innerHTML = numberOfLetters;
+document.getElementById("lettersRange").value = numberOfLetters;
+
+document.getElementById("vowelsRange").innerHTML = maxVowelCount;
+document.getElementById("vowelsRange").value = maxVowelCount;
+
+document.getElementById("vowelsRange").max = numberOfLetters;
+
+
+}
+
+function generateLetter (x) {
+
+  var previousUpArrowString = ("upArrow"+(x-1));
+  var previousDownArrowString =  ("downArrow"+(x-1));
+
+  if (x > 1) {
+
+document.getElementById(previousUpArrowString).style.visibility = "hidden";
+document.getElementById(previousDownArrowString).style.visibility = "hidden";
+
+  }
+
+
+  var upArrowString = ("upArrow"+x);
+  var downArrowString =  ("downArrow"+x);
+  var cellString = ("cell"+x);
+
+ document.getElementById(upArrowString).style.visibility = "visible";
+document.getElementById(downArrowString).style.visibility = "visible";
+
+  if ((upKeySim == x) && vowelCounter <= maxVowelCount)  { // Up Arrow Clicked
+
+    Letters[x-1] = vowel(Letters[x-1]);
+    document.getElementById(cellString).innerHTML = Letters[x-1];
+    document.getElementById(cellString).style.background = vowelBG;
+    vowelCounter++;
+    upKeySim = x-1;
+
+    if (x < numberOfLetters){
+
+      generateLetter(x+1);
+
+    }
+    else {
+
+      findWords();
+      lastLetter();
+      solutionTest = 1;
+      return;
+
+    }
+    
+    
+  }
+
+    else if ((upKeySim == x) && vowelCounter > maxVowelCount) { 
+
+    window.alert("You have reached the maximum amount of vowels allowed ("+maxVowelCount+")! A consonant was selected. This can be changed in the settings."); 
+
+    Letters[x-1] = consonant(Letters[x-1]);
+    document.getElementById(cellString).innerHTML = Letters[x-1];
+    document.getElementById(cellString).style.background = consonantBG;
+    downKeySim = x-1;
+   
+   if (x < numberOfLetters){
+
+      generateLetter(x+1);
+
+    }
+    else {
+
+      findWords();
+      lastLetter();
+      solutionTest = 1;
+      return;
+
+    }
+
+  } 
+
+   else if (downKeySim == x) { // Down Arrow Clicked
+
+    Letters[x-1] = consonant(Letters[x-1]);
+    document.getElementById(cellString).innerHTML = Letters[x-1];
+    document.getElementById(cellString).style.background = consonantBG;
+    downKeySim = x-1;
+   
+   if (x < numberOfLetters){
+
+      generateLetter(x+1);
+
+    }
+    else {
+
+      findWords();
+      lastLetter();
+      solutionTest = 1;
+      return;
+
+    }
+
+  } 
+
+  else {
+
+      window.onkeyup = function(e) { // Key Released
+
+    if (e.keyCode == 38 && vowelCounter < maxVowelCount)  { // Up Arrow Key
+
+        Letters[x-1] = vowel(Letters[x-1]);
+        document.getElementById(cellString).innerHTML = Letters[x-1];
+        document.getElementById(cellString).style.background = vowelBG;
+        vowelCounter++;
+        upKeySim = x-1;
+
+      if (x < numberOfLetters){
+
+      generateLetter(x+1);
+
+      }
+          else {
+
+      findWords();
+      lastLetter();
+      solutionTest = 1;
+      return;
+
+    }
+        
+      }
+
+      else if (e.keyCode == 38 && vowelCounter >= maxVowelCount) { // Down Arrow key
+
+        window.alert("You have reached the maximum amount of vowels allowed ("+maxVowelCount+")! A consonant was selected. This can be changed in the settings."); 
+
+
+        Letters[x-1] = consonant(Letters[x-1]);
+        document.getElementById(cellString).innerHTML = Letters[x-1];
+        document.getElementById(cellString).style.background = consonantBG;
+      
+      if (x < numberOfLetters){
+
+      generateLetter(x+1);
+
+
+    }
+    else {
+
+      findWords();
+      lastLetter();
+      solutionTest = 1;
+      return;
+
+    }
+
+      }
+
+      
+      else if (e.keyCode == 40) { // Down Arrow key
+
+        Letters[x-1] = consonant(Letters[x-1]);
+        document.getElementById(cellString).innerHTML = Letters[x-1];
+        document.getElementById(cellString).style.background = consonantBG;
+      
+      if (x < numberOfLetters){
+
+      generateLetter(x+1);
+
+
+    }
+    else {
+
+      findWords();
+      lastLetter();
+      solutionTest = 1;
+      return;
+
+    }
+
+      }
+
+    }
+
+      window.onkeydown = function(e) { // Key Pressed
+
+      if (e.keyCode == 38) {
+
+        document.getElementById(upArrowString).style.borderBottom =  "40px solid #000204";
+
+      }
+      
+      else if (e.keyCode == 40) {
+
+        document.getElementById(downArrowString).style.borderTop =  "40px solid #000204";
+
+      }
+
+    }
+
+}
+
+}
+
+function conundrum () {
+
+conunLength = parseInt(window.prompt("Enter Number of Letters:"));
+capitalYN = window.confirm("Capitalize first letter of conundrum?");
+
+if (conunLength > 13 || conunLength < 2){
+
+  window.alert("The conundrum must be between  2 and 13 letters!");
+  conundrum();
+}
+
+randomWord();
+clearBoard();
+displayCells(conunLength);
+
+
+var conundrumShuffled = shuffelConundrum(chosenWord);
+var randomArray = conundrumShuffled.split("");
+
+  document.getElementById("solutionButton").onclick = solutionConundrum;
+  document.getElementById("text").innerHTML = conundrumShuffled+"<br>=<br>"+chosenWord+"<br><br>";
+
+var t = 0;
+
+for (let t=0; t < conunLength; t++){
+
+
+
+  setTimeout(function loop () {
+
+      var cellString = "cell"+(t+1);
+
+      
+        if (randomArray[t] == "a" || randomArray[t] == "i" || randomArray[t] == "o" || randomArray[t] == "u" || randomArray[t] == "e") {
+
+            document.getElementById(cellString).style.background = vowelBG;
+
+        }
+
+        else {
+
+             document.getElementById(cellString).style.background = consonantBG;
+
+        }
+      
+      document.getElementById(cellString).innerHTML = randomArray[t];
+
+
+}
+,t*500);
+
+}
+
+}
+
+function displayCells(c){
+
+  var o = 13;
+
+  for (o = 13; o > c; o--) {
+
+    var deleteString = "cell"+o;
+    var deleteStringUp = "upTdArrow"+o;
+    var deleteStringDown = "downTdArrow"+o;
+
+    document.getElementById(deleteString).style.display = "none";
+    document.getElementById(deleteStringUp).style.display = "none";
+    document.getElementById(deleteStringDown).style.display = "none";
+
+  }
+
+
+}
+
+function shuffelConundrum (word){
+    var shuffledWord = '';
+    word = word.split('');
+    while (word.length > 0) {
+      shuffledWord +=  word.splice(word.length * Math.random() << 0, 1);
+    }
+    return shuffledWord;
+}
+
+function clearBoard () {
+
+var x = 0;
+
+window.onkeyup = "";
+
+document.getElementById("bigNumArrow").style.display = "none";
+document.getElementById("smallNumArrow").style.display = "none";
+
+for (x = 0; x < 13; x++) {
+
+var upArrowClearString = "upArrow"+(x+1);
+var downArrowClearString = "downArrow"+(x+1);
+var cellClearString = "cell"+(x+1);
+
+
+document.getElementById(cellClearString).innerHTML = "";
+document.getElementById(cellClearString).style.background = "white";
+document.getElementById(cellClearString).style.display = "";
+
+
+}
+
+
+
+
+
+}
+
+function randomWord(){
+
+chosenWord = words[Math.floor(Math.random()*words.length)];
+
+if (chosenWord.length == conunLength) {
+
+  if (capitalYN == true) {
+
+      chosenWord = chosenWord.charAt(0).toUpperCase() + chosenWord.slice(1);
+
+      return chosenWord;
+
+    }
+
+  else if (capitalYN == false) {
+
+      return chosenWord;
+
+  }
+
+}
+
+else {
+
+  randomWord();
+
+}
+
+}
+
+function reload () {
+
+  location.reload(); // Reloads Page
+
+}
+
+function lastLetter() {
+
+  var lastUp = "upArrow"+numberOfLetters;
+  var lastDown = "downArrow"+numberOfLetters;
+
+document.getElementById(lastUp).style.visibility = "hidden";
+document.getElementById(lastDown).style.visibility = "hidden";
+
+    window.onkeyup = "";
+
+}
+
+
+function findWords () {
+
+  var bestFit;
+  var numMatches = 0;
+  var highestMatch = 0;
+  var i = 0, j = 0, len = 0;
+  var temp = Letters.join("");
+  var tempCount = 0, wordCount = 0;
+var check = 0;
+
+wordCounterForLoop = wordCounterForLoop - 1;
+matchWordCount = matchWordCount + 1;
+
+  for (i = 0; i < wordCounterForLoop; i++)
+  {
+    numMatches = 0;
+    len = (words[i].length);
+
+    for (j = 0;j < len;j++)
+    {
+      tempCount = 0;
+      wordCount = 0;
+      tempCount = countCharOccurence(temp, words[i][j]);
+      wordCount = countCharOccurence(words[i], words[i][j]);
+
+  
+      if ((tempCount > 0) && (tempCount == wordCount))
+      {
+        numMatches = numMatches + 1;
+      }
+      else
+      {
+        numMatches = 0;
+        break;
+
+      }
+    }
+
+    if (numMatches > highestMatch)
+    {
+      matchWord[matchWordCount] = words[i];
+      highestMatch = numMatches;
+      check = i;
+      
+      
+    }
+
+  }
+
+  if (matchWord[matchWordCount] == undefined) {
+
+    matchWord[matchWordCount] = "";
+  }
+  else {
+
+    words.splice(check, 1);
+
+  }
+
+}
+
+function countCharOccurence(string, c)
+{
+  var i = 0, count = 0, len = 0;
+  len = (string).length;
+  for (i = 0;i < len;i++)
+  {
+    if (string[i] == c) count++;
+  }
+  return count;
+}
+
+
+function vowel(a) {
+
+  var randomPositionVowel = Math.floor(Math.random() * 5);
+  var vowels = ["a", "e", "i", "o", "u"];
+
+  return vowels[randomPositionVowel];
+
+
+}
+
+function consonant(a) {
+
+  var randomPositionConsonant = Math.floor(Math.random() * 21);
+  var consonants = ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z"];
+
+  return consonants[randomPositionConsonant];
+
+}
+
+
+
+function solution () {
+
+  if (solutionTest == 0) {
+
+  window.alert("The game was not fully generated!");
+  solutionOff();
+
+  }
+  else{
+
+    var longWords = []
+
+    var b = 0;
+
+    for (b = 0; b < 7; b ++) {
+
+      findWords();
+      longWords[b] = matchWord[b];
+
+
+    }
+
+      if (longWords[0] == ""){
+
+    longWords[0] = "No Words Found!";
+      }
+
+  document.getElementById("text").innerHTML = Letters+"<br><br>"+longWords[0]+"<br>"+longWords[1]+"<br>"+longWords[2]+"<br>"+longWords[3]+"<br>"+longWords[4]+"<br>"+longWords[5]+"<br>"+longWords[6];
+
+      }
+
+
+}
+
+function solutionOn() {
+
+  document.getElementById("solutionOverlay").style.display = "block";
+  solution();
+}
+
+
+function solutionConundrum() {
+
+  document.getElementById("solutionOverlay").style.display = "block";
+
+}
+
+function solutionOff() {
+
+  document.getElementById("solutionOverlay").style.display = "none";
+}
+
+function setCookie(cname, cvalue, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  var expires = "expires="+d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for(var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function settings () {
+
+    numLettersString = document.getElementById("lettersRange").value;
+    if (numLettersString != "" && numLettersString != null) {
+      setCookie("numLetters", numLettersString, 365);
+    }
+
+      maxVowelsString = document.getElementById("vowelsRange").value;
+    if (maxVowelsString != "" && maxVowelsString != null) {
+      setCookie("maxVowels", maxVowelsString, 365);
+    }
+
+reload();
+
+}
+
+function openTimer() {
+  document.getElementById("overlayTimer").style.display = "block";
+   document.getElementById("timerTime").innerHTML = "";
+  
+
+}
+
+function closeTimer() {
+  document.getElementById("overlayTimer").style.display = "none";
+  document.getElementById("tinyTimer").style.visibility = "hidden";
+}
+
+function openSettings() {
+  document.getElementById("overlaySettings").style.display = "block";
+
+var lettersSlider = document.getElementById("lettersRange");
+var lettersOutput = document.getElementById("lettersRangeNum");
+var vowelsSlider = document.getElementById("vowelsRange");
+var vowelsOutput = document.getElementById("vowelsRangeNum");
+
+lettersOutput.innerHTML = lettersSlider.value;
+
+lettersRange.oninput = function() {
+   
+   lettersOutput.innerHTML = this.value;
+   vowelsSlider.max = this.value;
+
+}
+
+
+
+vowelsOutput.innerHTML = vowelsSlider.value;
+
+vowelsRange.oninput = function() {
+   
+  vowelsOutput.innerHTML = this.value;
+
+}
+  
+
+}
+
+function closeSettings() {
+  document.getElementById("overlaySettings").style.display = "none";
+}
+
+function runTimer () {
+
+ document.getElementById("tinyTimer").style.visibility = "visible";
+ document.getElementById("overlayTimer").style.display = "none";
+ document.getElementById("timerTime").innerHTML = "";
+
+var stringInputMin = document.getElementById("timerTimeM").value;
+var stringInputSec = document.getElementById("timerTimeS").value; 
+
+ timerInputMinutes = parseInt(document.getElementById("timerTimeM").value);
+ timerInputSeconds = parseInt(document.getElementById("timerTimeS").value); 
+
+ var minutesToSeconds = timerInputMinutes * 60;
+
+if (timerInputSeconds < 0 || timerInputMinutes < 0) {
+  
+  window.alert("The time entered must be positive!");
+  closeTimer();
+  openTimer();
+
+}
+else if (isNaN(stringInputSec) || isNaN(stringInputMin)) {
+  
+  window.alert("The time entered must be a number!");
+  closeTimer();
+  openTimer();
+
+}
+else if (stringInputSec == "" || stringInputMin == "") {
+  
+  window.alert("Nothing was entered in one (or both) of the slots!");
+  closeTimer();
+  openTimer();
+
+}
+else if (timerInputSeconds > 59) {
+  
+  window.alert("The seconds that you entered were greater than 59, as such your timer has been corrected from "+timerInputMinutes+":"+timerInputSeconds+" to "+minutesToDisplay+":"+secondsToDisplay);
+
+}
+
+
+ var time = eval(minutesToSeconds + timerInputSeconds);
+
+startTimer(time, timerTime);
+
+return 0;
+
+}
+
+function startTimer(duration, display) {
+    var timer = duration, minutes, seconds;
+    setInterval(function () {
+        minutes = parseInt(timer / 60, 10)
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            timer = 0;
+        }
+    }, 1000);
+}
+
+
+</script>
+
+<style>
+
+body {
+
+  background-color: #dadada;
+
+}
+
+@font-face {
+  font-family: 'Cheveuxdange';
+  src: URL('../Fonts/Cheveuxdange.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Digital';
+  src: URL('../Fonts/digital-7.ttf') format('truetype');
+}
+
+.solutions h1 {
+
+font-size: 60px;
+  font-family: Cheveuxdange;
+  text-align: center;
+
+}
+
+.timerInput {
+
+  padding: 10px 10px;
+  margin: 0px 0px;
+  display: inline-block;
+  border: 2px solid #156711;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 20px;
+
+}
+
+
+.button {
+
+  background-color: #142D48; 
+  border: none;
+  color: white;
+  margin: 20px 20px;
+  margin-left: 50px;
+  padding: 15px 32px;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+
+}
+
+.button:hover {
+
+  background-color: #000204;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+
+.table {
+
+  border: none;
+
+}
+
+.letterCell{
+
+  background-color: white; 
+  color: black;
+  text-align: center; 
+  border: thick solid black;
+  font-family: arial;
+  font-size: 30px;
+  height: 100px;
+  width: 100px;
+
+
+}
+
+.arrowTableArea {
+
+  background-color: #dadada; 
+  color: white;
+  font-weight: bold;
+  text-align: center; 
+  border: none;
+  font-family: arial;
+  height: 40px;
+  width: 100px;
+
+}
+
+
+.blankTableArea {
+
+  background-color: #dadada; 
+  color: white;
+  font-weight: bold;
+  text-align: center; 
+  border: none;
+  font-family: arial;
+  height: 100px;
+  width: 110px;
+
+}
+
+
+.totalDisplayArea {
+
+  background-color: white; 
+  color: black;
+  text-align: center; 
+  border: thick solid black;
+  font-family: arial;
+  font-size: 70px;
+  font-weight: bold;
+  height: 130px;
+  width: 250px;
+
+}
+
+.menuDisplayArea {
+
+  background-color:  #142D48; 
+  height: 100px;
+  width: 1533px;
+  margin-top: -25px;
+  margin-left: -15px;
+  padding: 5px;
+}
+
+.menuDisplayArea p {
+
+  color: white;
+  font-family: arial;
+  font-size: 50px;
+  font-weight: bold;
+  margin-top: 30px;
+  margin-left: 80px;
+
+}
+
+.menuDisplayArea a {
+
+  color: white;
+  font-family: arial;
+  font-size: 50px;
+  cursor:  pointer;
+
+}
+
+.menuDisplayArea a:hover {
+
+ 
+}
+
+.triangle-up {
+  width: 0;
+  height: 0;
+  border-left: 55px solid transparent;
+  border-right: 55px solid transparent;
+  border-bottom: 40px solid #142D48;
+  visibility: hidden;
+}
+
+
+.triangle-up:hover {
+  
+  border-bottom: 40px solid #000204;
+  cursor: pointer;
+
+}
+
+.triangle-down {
+  width: 0;
+  height: 0;
+  border-left: 55px solid transparent;
+  border-right: 55px solid transparent;
+  border-top: 40px solid #142D48;
+  cursor: pointer;
+  visibility: hidden;
+}
+
+.triangle-down:hover {
+  
+  border-top: 40px solid #000204;
+  cursor: pointer;
+  
+}
+
+.overlay {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+  cursor: pointer;
+}
+
+.text{
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 50px;
+  color: black;
+  font-family: Cheveuxdange;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+}
+
+.startButton {
+
+  background-color: #105F25; 
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  border-radius: 4px;
+ left: 100px;
+  top: -66px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+    z-index: 1;
+  position: relative;
+
+}
+
+.startButton:hover {
+
+  background-color: #004011;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.stopButton {
+
+  background-color: black; 
+  border: none;
+  color: white;
+  margin-top: 150px;
+  margin-left: 500px;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 30px;
+  font-weight: bold;
+  z-index: 1;
+  position: relative;
+
+}
+
+.stopButton:hover {
+
+  color: red;
+  cursor: pointer;
+}
+
+.tinyTimerText {
+
+color: orange;
+font-family: Digital;
+font-size: 80px;
+margin-top: 55px;
+margin-left: 45px;
+z-index: 2;
+position: absolute;;
+
+}
+
+.tinyTimerImage {
+
+z-index:  -1;
+
+}
+
+
+.timerText{
+
+  position: fixed;
+  top: 21%;
+  left: 53%;
+  font-size: 60px;
+  color: white;
+  font-weight: bold;
+  font-family: Digital;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  background: none;
+  border: none;
+}
+
+.timerImage {
+
+  position: fixed;
+  margin-left: -170px;
+}
+
+.minutes{
+
+  position: fixed;
+  top: 47%;
+  left: 38%;
+  font-size: 260px;
+  color: orange;
+  font-weight: bold;
+  font-family: Digital;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  width: 260px;  
+  background: none;
+  border: none;
+}
+
+.seconds{
+
+  position: fixed;
+  top: 47%;
+  left: 61%;
+  font-size: 260px;
+  color: orange;
+  font-weight: bold;
+  font-family: Digital;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  width: 260px;  
+  background: none;
+  border: none;
+}
+
+.tinyTimer {
+
+visibility: hidden;
+
+}
+
+.blankTableAreaExtend {
+
+  background-color: #dadada; 
+  color: white;
+  font-weight: bold;
+  text-align: center; 
+  border: none;
+  font-family: arial;
+  height: 100px;
+  width: 250px;
+
+}
+
+
+#overlayTimer {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+  cursor: pointer;
+}
+
+.saveButton {
+
+  background-color: white; 
+  border: thick #000204 solid;
+  color: black;
+  font-weight:  bold;
+  padding: 15px 32px;
+  border-radius: 4px;
+ left: 500px;
+ top: 330px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+    z-index: 1;
+  position: relative;
+
+}
+
+.settingsInput {
+
+  padding: 10px 10px;
+  margin: 0px 0px;
+  display: inline-block;
+  border: 2px solid #801515;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 20px;
+
+}
+
+.saveButton:hover {
+
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #000204;
+}
+
+.stopButtonSettings {
+
+  background-color: transparent; 
+  border: none;
+  color: white;
+  margin-top: 150px;
+  margin-left: 500px;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 30px;
+  font-weight: bold;
+  z-index: 1;
+  position: relative;
+
+}
+
+.stopButtonSettings:hover {
+
+  color: #000204;
+  cursor: pointer;
+}
+
+
+.settingsText{
+
+  position: fixed;
+  top: 21%;
+  left: 53%;
+  font-size: 60px;
+  color: white;
+  font-weight: bold;
+  font-family: Digital;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  background: none;
+  border: none;
+}
+
+.settingsImage {
+
+  position: fixed;
+  margin-left: -170px;
+}
+
+
+.overlaySettings {
+  position: fixed;
+  display: none;
+  width: 110%;
+  height: 100%;
+  top: 0;
+  left: -120;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+  cursor: pointer;
+}
+
+.sliderDisplay {
+
+color: white;
+font-family: arial;
+font-weight: bold;
+position:  fixed;
+margin-left: 200px;
+margin-top: 200px;
+
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 50%;
+  height: 25px;
+  background: white;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  position:  fixed;
+z-index: 3;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #000204;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slideOutput {
+  width: 100%;
+  position:  fixed;
+z-index:  3;
+}
+
+
+
+
+
+
+</style>
+
+</head>
+
+<body onload = "onloadFunc();">
+
+  <div class="headingDiv">
+
+   
+    <div class="menuDisplayArea" id="menu"><p id="heading"><a onclick="openSettings();"><i class="fas fa-cog"></i></a><a onclick="openRules();"><i style= "margin-left: 20px;"class="fas fa-book-open"></i></a>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Countdown Letters &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<a href="../Numbers"><i class="fas fa-sort-numeric-up"></i></a></p></div>
+    
+
+
+
+
+  </div>
+
+  <center>
+
+  <div id="countdownDiv" class="countdownDiv">
+
+  <br>
+  <br>
+  <br>
+
+    <table class="table" border="1">
+
+    <tr id="bigNumArrow">
+    <td id="upTdArrow1" class="arrowTableArea"><div id="upArrow1" onclick="keypressUp(1);" class="triangle-up" ></div></td>
+    <td id="upTdArrow2" class="arrowTableArea"><div id="upArrow2" onclick="keypressUp(2);" class="triangle-up" ></div></td>
+    <td id="upTdArrow3" class="arrowTableArea"><div id="upArrow3" onclick="keypressUp(3);" class="triangle-up" ></div></td>
+    <td id="upTdArrow4"  class="arrowTableArea"><div id="upArrow4" onclick="keypressUp(4);" class="triangle-up" ></div></td>
+    <td  id="upTdArrow5" class="arrowTableArea"><div id="upArrow5" onclick="keypressUp(5);" class="triangle-up" ></div></td>
+    <td id="upTdArrow6" class="arrowTableArea"><div id="upArrow6" onclick="keypressUp(6);" class="triangle-up" ></div></td>
+    <td id="upTdArrow7" class="arrowTableArea"><div id="upArrow7" onclick="keypressUp(7);" class="triangle-up" ></div></td>
+    <td id="upTdArrow8" class="arrowTableArea"><div id="upArrow8" onclick="keypressUp(8);" class="triangle-up" ></div></td>
+    <td id="upTdArrow9" class="arrowTableArea"><div id="upArrow9" onclick="keypressUp(9);" class="triangle-up" ></div></td>
+    <td  id="upTdArrow10" class="arrowTableArea"><div id="upArrow10" onclick="keypressUp(10);" class="triangle-up" ></div></td>
+    <td id="upTdArrow11" class="arrowTableArea"><div id="upArrow11" onclick="keypressUp(11);" class="triangle-up" ></div></td>
+    <td id="upTdArrow12" class="arrowTableArea"><div id="upArrow12" onclick="keypressUp(12);" class="triangle-up" ></div></td>
+    <td  id="upTdArrow13" class="arrowTableArea"><div id="upArrow13" onclick="keypressUp(13);" class="triangle-up" ></div></td>
+  
+    </tr>
+
+    <tr id= "lettersRow" style="visibility: hidden;">
+    <td class="letterCell" id="cell1"></td>
+    <td class="letterCell" id="cell2"></td>
+    <td class="letterCell" id="cell3"></td>
+    <td class="letterCell" id="cell4"></td>
+    <td class="letterCell" id="cell5"></td>
+    <td class="letterCell" id="cell6"></td>
+    <td class="letterCell" id="cell7"></td>
+    <td class="letterCell" id="cell8"></td>
+    <td class="letterCell" id="cell9"></td>
+    <td class="letterCell" id="cell10"></td>
+    <td class="letterCell" id="cell11"></td>
+    <td class="letterCell" id="cell12"></td>
+    <td class="letterCell" id="cell13"></td>
+    
+    </tr>
+
+    <tr id="smallNumArrow">
+    <td id="downTdArrow1" class="arrowTableArea"><div id="downArrow1" onclick="keypressDown(1);" class="triangle-down"></div></td>
+    <td id="downTdArrow2" class="arrowTableArea"><div id="downArrow2" onclick="keypressDown(2);" class="triangle-down"></div></td>
+    <td id="downTdArrow3" class="arrowTableArea"><div id="downArrow3" onclick="keypressDown(3);" class="triangle-down"></div></td>
+    <td id="downTdArrow4"  class="arrowTableArea"><div id="downArrow4" onclick="keypressDown(4);" class="triangle-down"></div></td>
+    <td id="downTdArrow5" class="arrowTableArea"><div id="downArrow5" onclick="keypressDown(5);" class="triangle-down"></div></td>
+    <td id="downTdArrow6" class="arrowTableArea"><div id="downArrow6" onclick="keypressDown(6);" class="triangle-down"></div></td>
+    <td id="downTdArrow7" class="arrowTableArea"><div id="downArrow7" onclick="keypressDown(7);" class="triangle-down"></div></td>
+    <td id="downTdArrow8" class="arrowTableArea"><div id="downArrow8" onclick="keypressDown(8);" class="triangle-down"></div></td>
+    <td id="downTdArrow9"  class="arrowTableArea"><div id="downArrow9" onclick="keypressDown(9);" class="triangle-down"></div></td>
+    <td id="downTdArrow10" class="arrowTableArea"><div id="downArrow10" onclick="keypressDown(10);" class="triangle-down"></div></td>
+    <td id="downTdArrow11" class="arrowTableArea"><div id="downArrow11" onclick="keypressDown(11);" class="triangle-down"></div></td>
+    <td id="downTdArrow12" class="arrowTableArea"><div id="downArrow12" onclick="keypressDown(12);" class="triangle-down"></div></td>
+    <td id="downTdArrow13" class="arrowTableArea"><div id="downArrow13" onclick="keypressDown(13);" class="triangle-down"></div></td>
+   
+
+    </tr>
+
+    </table>
+
+  <br>
+
+    <table class="table" border="1">
+
+    <tr id= "buttonsRow">
+    <td class="blankTableArea" style="width: 280px;" ><button class="button" onclick="reload();">New Game <i style ="margin-left: 5px;" class="fas fa-redo"></i></button></td>
+    <td class="blankTableArea" style="width: 280px;"><button class="button" onclick="conundrum();">Conundrum <i style ="margin-left: 5px;" class="fas fa-question-circle"></i></button></td>
+    <td class="blankTableArea" style="width: 280px;" ><button class="button" onclick="openTimer();">Set Timer <i style ="margin-left: 5px;" class="fas fa-hourglass-half"></i></button></td>
+    <td class="blankTableArea" style="width: 280px;"><button class="button" id="solutionButton" onclick="solutionOn();">Show Solutions <i style ="margin-left: 5px;" class="fas fa-pencil-alt"></i></button></td>
+    
+    </tr>
+
+    </table>
+
+  <br>
+
+  <table class="table" border="1">
+<tr>
+       <td class="blankTableAreaExtend"><div id="tinyTimer" class="tinyTimer"><p class= "tinyTimerText"> <span id = "timerTime">0</span></p><img src="../Overlays/tinyTimer.png" class="tinyTimerImage" style=" height: 200%;"></td>
+</tr>
+     </table>
+
+  </div>
+  
+  <div id="solutionOverlay" class ="overlay" onclick="solutionOff()">
+  <img src="../Overlays/overlayNote.png">
+  <p id="text" class="text"></p>
+
+</div>
+
+
+  <div id="overlayTimer">
+  <button onclick="runTimer();" class= "startButton">START</button>
+  <img src="../Overlays/overlayTimer.png" class="timerImage" style=" margin-top: 40px; height: 90%;">
+  <input class="minutes" dir="rtl" maxlength="2" value="00" placeholder="00" id="timerTimeM"></input>
+  <input class="seconds" dir="rtl" maxlength="2"value="30" placeholder="00" id="timerTimeS"></input>
+
+  <button onclick="closeTimer();" class= "stopButton">X</button>
+
+</div>
+
+  <div id="overlaySettings" class="overlaySettings">
+
+    <div class="sliderOutput">
+
+      <p  class ="sliderDisplay"  style ="margin-top: 270px; margin-left: 700px; z-index: 3;">Number of Letters: <span id="lettersRangeNum">9</span></p>
+  
+  <input type="range" min="4" max="13" value="9" class="slider" style ="margin-top: 300px; border: thick #000204 solid; margin-left: -150px; width: 400px; " id="lettersRange">
+  
+    <p  class ="sliderDisplay"  style ="margin-top: 370px; margin-left: 700px; z-index: 3;">Maximum Number of Vowels: <span id="vowelsRangeNum">5</span></p>
+
+      <input type="range" min="1" max="9" value="5" class="slider" style ="border: thick #000204 solid; margin-top: 400px; margin-left: -150px; width: 400px; "id="vowelsRange">
+
+  </div>
+  <button onclick="settings();" class= "saveButton">SAVE CHANGES</button>
+  <img src="../Overlays/overlaySettings.png" class="settingsImage" style=" margin-top: 40px; height: 90%;">
+  <button onclick="closeSettings();" class= "stopButtonSettings">X</button>
+
+</div>
+
+  </center>
+</body>
+</html>

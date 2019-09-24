@@ -1,0 +1,1633 @@
+<html>
+
+<head>
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+<title>Countdown</title>
+
+<script>
+
+// Arrays
+
+var Numbers = [];
+var NumbersCopy = [];
+var testNumbers = [];
+var numbersShuffled  = [];
+var signArray = [];
+var repeatedNumbers = [];
+var answerArray = [0, 0, 0, 0, 0];
+var range = [100, 1000];
+
+//Timer 
+
+var timerInputSeconds = 0;
+var timerInputMinutes = 0;
+var minutesToDisplay;
+var secondsToDisplay;
+var currentSeconds;
+var currentMinutes = 0;
+var interval;
+
+var testTotal = 0;
+ var duplicateCheck = 0; 
+// Big Numbers
+
+var bigNumArray = [[25, 50, 75, 100],[12, 36, 62, 87],[47, 72, 97, 122]];
+
+// Powers
+
+var powerTest = ["", "", "", "", ""];
+
+// Check Numbers
+
+var totalNumber = 0;
+var bigNumCount = 0;
+var steps = 0;
+
+// Colour Schemes
+
+var bigBG = "#D44E55";
+var smallBG = "#FFA6AA";
+
+// Keypress Simulators
+
+var downKeySim = 0;
+var upKeySim = 0;
+
+// Cookies
+
+var confirmSigns = [1, 0, 0, 0, 1, 1];
+var opOptions = [[1, 1, 1, 1, 0, 0], [1, 1, 1, 0, 0, 0], [1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1]];
+
+var bigNumString = 3;
+var targetMax = 1000;
+var targetMin = 100;
+var bigNumSelector = 1;
+var operationsCookie = 1;
+var bigNumCookie = 1;
+var bigNumMax = 3;
+
+
+
+function keypressUp (a) {
+
+  upKeySim = a;
+  
+  generateNumber(a);
+  
+
+}
+
+function keypressDown (a) {
+
+  downKeySim = a;
+
+  generateNumber(a);
+
+
+}
+
+function onloadFunc () {
+
+  if (getCookie("targetMin") != ""){
+
+    targetMin = getCookie("targetMin");
+
+  }
+
+
+
+if (targetMin != "" && targetMin != null && targetMin != NaN){
+
+range[0] = parseInt(targetMin);
+
+}
+
+  if (getCookie("targetMax") != ""){
+
+targetMax = getCookie("targetMax");
+
+}
+
+if (targetMax != "" && targetMax != null && targetMax != NaN){
+
+range[1] = parseInt(targetMax);
+
+}
+
+  if (getCookie("numSet") != ""){
+
+bigNumSelector = getCookie("numSet");
+
+}
+
+if (bigNumSelector != "" && bigNumSelector != null && bigNumSelector != NaN){
+
+bigNumCookie = eval(parseInt(bigNumSelector)-1);
+
+}
+
+  if (getCookie("opSet") != ""){
+
+operationsCookie = getCookie("opSet");
+
+}
+
+if (operationsCookie != "" && operationsCookie != null && operationsCookie!= NaN){
+
+confirmSigns = opOptions[eval(parseInt(operationsCookie)-1)];
+
+}
+
+  if (getCookie("bigNumNum") != ""){
+
+bigNumString = getCookie("bigNumNum");
+}
+
+if (bigNumString != "" && bigNumString != null && bigNumString!= NaN){
+
+bigNumMax = eval(parseInt(bigNumString)-1);
+
+}
+
+generateNumber(1);
+
+document.getElementById("minRange").value = targetMin;
+document.getElementById("maxRange").value = targetMax;
+document.getElementById("numDrop").value = bigNumSelector;
+document.getElementById("opDrop").value = operationsCookie;
+document.getElementById("bigNumRange").value = bigNumString;
+document.getElementById("bigNumRangeNum").innerHTML = bigNumString;
+
+}
+
+
+function generateNumber (x) {
+
+    var previousUpArrowString = ("upArrow"+(x-1));
+    var previousDownArrowString =  ("downArrow"+(x-1));
+
+  if (x > 1) {
+
+document.getElementById(previousUpArrowString).style.visibility = "hidden";
+document.getElementById(previousDownArrowString).style.visibility = "hidden";
+
+  }
+
+  var upArrowString = ("upArrow"+x);
+  var downArrowString =  ("downArrow"+x);
+  var cellString = ("cell"+x);
+
+
+  document.getElementById(upArrowString).style.visibility = "visible";
+  document.getElementById(downArrowString).style.visibility = "visible";
+
+  if ((upKeySim == x)  && (bigNumCount <= bigNumMax))  { // Up Arrow Clicked
+
+    Numbers[x-1] = bigNumber(Numbers[x-1]);
+    document.getElementById(cellString).innerHTML = Numbers[x-1];
+    document.getElementById(cellString).style.background = bigBG;
+    bigNumCount++;
+    upKeySim = x-1;
+
+    if (x < 6){
+
+      generateNumber(x+1);
+
+    }
+    else {
+
+      generateTotalNum();
+
+    }
+    
+  }
+
+
+  else if ((upKeySim == x) && (bigNumCount > bigNumMax)) {
+
+    window.alert("Too many big Numbers! ("+eval(bigNumMax+1)+") A small number was selected! This can be changed in the settings!")
+    Numbers[x-1] = smallNumber(Numbers[x-1]);
+    document.getElementById(cellString).innerHTML = Numbers[x-1];
+     document.getElementById(cellString).style.background = smallBG;
+
+ if (x < 6){
+
+      generateNumber(x+1);
+
+    }
+    else {
+
+      generateTotalNum();
+
+    }
+
+
+    }
+
+   else if (downKeySim == x) { // Down Arrow Clicked
+
+    Numbers[x-1] = smallNumber(Numbers[x-1]);
+    document.getElementById(cellString).innerHTML = Numbers[x-1];
+    document.getElementById(cellString).style.background = smallBG;
+    downKeySim = x-1;
+    
+     if (x < 6){
+
+      generateNumber(x+1);
+
+    }
+    else {
+
+      generateTotalNum();
+
+    }
+
+  } 
+
+  else {
+
+      window.onkeyup = function(e) { // Key Released
+
+      if ((e.keyCode == 38) && (bigNumCount <= bigNumMax))  { // Up Arrow Key
+
+        Numbers[x-1] = bigNumber(Numbers[x-1]);
+        document.getElementById(cellString).innerHTML = Numbers[x-1];
+        document.getElementById(cellString).style.background = bigBG;
+        bigNumCount++;
+        upKeySim = x-1;
+        
+         if (x < 6){
+
+      generateNumber(x+1);
+
+    }
+    else {
+
+      generateTotalNum();
+
+    }
+        
+      }
+
+        else if ((e.keyCode == 38) && (bigNumCount > bigNumMax)) {
+
+        window.alert("Too many big Numbers! ("+eval(bigNumMax+1)+") A small number was selected! This can be changed in the settings!");
+        Numbers[x-1] = smallNumber(Numbers[x-1]);
+        document.getElementById(cellString).innerHTML = Numbers[x-1];
+         document.getElementById(cellString).style.background = smallBG;
+        
+         if (x < 6){
+
+      generateNumber(x+1);
+
+    }
+    else {
+
+      generateTotalNum();
+
+    }
+
+
+
+      }
+      
+      else if (e.keyCode == 40) { // Down Arrow key
+
+        Numbers[x-1] = smallNumber(Numbers[x-1]);
+        document.getElementById(cellString).innerHTML = Numbers[x-1];
+        document.getElementById(cellString).style.background = smallBG;
+        
+         if (x < 6){
+
+      generateNumber(x+1);
+
+    }
+    else {
+
+      generateTotalNum();
+
+    }
+
+      }
+
+    }
+
+      window.onkeydown = function(e) { // Key Pressed
+
+      if (e.keyCode == 38) {
+
+        document.getElementById(upArrowString).style.borderBottom =  "40px solid #561111";
+
+      }
+      
+      else if (e.keyCode == 40) {
+
+        document.getElementById(downArrowString).style.borderTop =  "40px solid #561111";
+
+      }
+
+    }
+
+}
+
+}
+
+function reload () {
+
+  location.reload(); // Reloads Page
+
+}
+
+function shuffle(a) { // Shuffles Array
+
+  var j, x, i;
+
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
+
+
+function generateTotalNum () {
+
+  var signArrayCopy = [];
+
+   steps = Math.floor(Math.random() * 3) + 3; 
+   signArray = [];
+   powerCount = 0;
+   answerArray = [0, 0, 0, 0, 0];
+
+
+   numbersShuffled = shuffle(Numbers);
+
+   testTotal = numbersShuffled[0];
+
+  var p = 0;
+
+  for (p = 0; p < steps; p++) {
+
+  testTotal = operate((testTotal), (numbersShuffled[p+1]));
+  answerArray[p] = testTotal;
+
+
+
+  }
+
+  var k = 0;
+
+  for (k = 0; k < signArray.length; k++){
+
+      if (signArray[k] == "<sup>") {
+
+          powerTest[k] = "</sup>";
+
+
+      }
+
+  }
+
+  var o = 0;
+  var s = 0;
+duplicateCheck = 0;
+
+
+  for (s = 0; s < answerArray.length; s++) {
+
+    for (o = 0; o < (answerArray.length); o++){
+
+      if ((answerArray[s] == answerArray [o]) && (answerArray[s] != 0) && (s != o)) {
+
+          duplicateCheck = 1;
+
+
+      }
+
+  }
+
+}
+
+
+  if ((testTotal > range[0]) && (testTotal < range[1]) && (testTotal % 1 == 0) && (duplicateCheck != 1)) {
+
+    totalNumber = testTotal;
+    displayTotalNum();
+
+  }
+  else {
+
+    generateTotalNum();
+
+
+}
+
+}
+
+
+function displayTotalNum () {
+
+
+    document.getElementById("upArrow6").style.visibility = "hidden";
+    document.getElementById("downArrow6").style.visibility = "hidden";
+
+    animateValue("total", 000, totalNumber, 2500);
+
+    window.onkeyup = "";
+
+
+}
+
+
+function animateValue(id, start, end, duration) {
+
+    var range = end - start;
+    var current = start;
+    var increment = end > start? 1 : -1;
+    var stepTime = Math.abs(Math.floor(duration / range));
+    var obj = document.getElementById(id);
+    var timer = setInterval(function() {
+        current += increment;
+        obj.innerHTML = current;
+        if (current == end) {
+            clearInterval(timer);
+        }
+    }, stepTime);
+}
+
+function bigNumber(a) {
+
+  var bigFour = Math.floor(Math.random() * 4);
+
+    return bigNumArray[bigNumCookie][bigFour];
+
+}
+
+function smallNumber (a) {
+
+  return Math.floor((Math.random() * 10)+1);
+
+}
+
+function operate(a, b) {
+
+  var randomSign = Math.floor(Math.random() * 6) + 1;
+
+
+  if (randomSign == 1 && confirmSigns[0] == 1) { // Addition
+
+     signArray.push(" + ");
+
+    return a+b;
+    
+   
+
+  }
+
+  else if (randomSign == 2 && confirmSigns[1] == 1) { // Subtraction
+
+        signArray.push(" - ");
+
+    return a-b;
+
+
+  }
+
+  else if (randomSign == 3 && confirmSigns[2] == 1) { // Multiplication
+
+      if ((a > 1) && (b > 1)) {
+
+          signArray.push(" &times ");
+
+          return a*b;
+
+      }
+
+      else {
+
+        operate(a, b);
+
+      }
+ 
+    
+  }
+
+  else if (randomSign == 4 && confirmSigns[3] == 1) { // Division
+
+     if ((a > 1) && (b > 1) && (((a/b) % 1) == 0)) {
+
+          signArray.push(" &divide ");
+
+          return a/b;
+
+      }
+
+        else {
+
+        operate(a, b);
+
+      }
+
+    }
+
+
+    else if (randomSign == 5 && confirmSigns[4] == 1) { // Raise to a Power
+
+     if ((a > 1) && (b > 1) && (b < 9)) {
+
+          signArray.push("<sup>");
+
+          return Math.pow(a, b);
+
+      }
+
+      else {
+
+        operate(a, b);
+
+      }
+
+    }
+
+        else if (randomSign == 6 && confirmSigns[5] == 1) { // Modulus
+
+     if ((a > 1) && (b > 1) && (a > b) && ((a%b) != 0)) {
+
+          signArray.push(" mod ");
+
+          return a%b;
+
+      }
+
+        else {
+
+        operate(a, b);
+
+      }
+
+    }
+
+      else {
+
+        operate(a, b);
+
+      }
+   
+
+}
+
+function solution () {
+
+  if (totalNumber == 0) {
+
+  window.alert("No number was generated!");
+  off();
+
+  }
+  else{
+    
+
+
+        unRandomNumbers ();
+
+        var l = 1;
+
+        if (steps == 2) {
+
+        var solutionString1 = " "+NumbersCopy;
+        var solutionString2 = " Target: "+totalNumber+"<br>";
+        var solutionString3 = numbersShuffled[0]+" "+signArray[0]+" "+numbersShuffled[1]+powerTest[0]+" = "+answerArray[0];
+        var solutionString4 = answerArray[0]+" "+signArray[1]+" "+numbersShuffled[2]+powerTest[1]+" = "+answerArray[1];
+
+        document.getElementById("text").innerHTML = solutionString1+"<br>"+solutionString2+"<br>"+solutionString3+"<br>"+solutionString4;
+
+        }
+        else if (steps == 3) {
+
+        var solutionString1 = " "+NumbersCopy;
+        var solutionString2 = " Target: "+totalNumber+"<br>";
+        var solutionString3 = numbersShuffled[0]+" "+signArray[0]+" "+numbersShuffled[1]+powerTest[0]+" = "+answerArray[0];
+        var solutionString4 = answerArray[0]+" "+signArray[1]+" "+numbersShuffled[2]+powerTest[1]+" = "+answerArray[1];
+        var solutionString5 = answerArray[1]+" "+signArray[2]+" "+numbersShuffled[3]+powerTest[2]+" = "+answerArray[2];
+
+        document.getElementById("text").innerHTML = solutionString1+"<br>"+solutionString2+"<br>"+solutionString3+"<br>"+solutionString4+"<br>"+solutionString5;
+
+        }
+        else if (steps == 4) {
+
+        var solutionString1 = " "+NumbersCopy;
+        var solutionString2 = " Target: "+totalNumber+"<br>";
+        var solutionString3 = numbersShuffled[0]+" "+signArray[0]+" "+numbersShuffled[1]+powerTest[0]+" = "+answerArray[0];
+        var solutionString4 = answerArray[0]+" "+signArray[1]+" "+numbersShuffled[2]+powerTest[1]+" = "+answerArray[1];
+        var solutionString5 = answerArray[1]+" "+signArray[2]+" "+numbersShuffled[3]+powerTest[2]+" = "+answerArray[2];
+        var solutionString6 = answerArray[2]+" "+signArray[3]+" "+numbersShuffled[4]+powerTest[3]+" = "+answerArray[3];
+
+
+        document.getElementById("text").innerHTML = solutionString1+"<br>"+solutionString2+"<br>"+solutionString3+"<br>"+solutionString4+"<br>"+solutionString5+"<br>"+solutionString6;
+
+        }
+        else if (steps == 5) {
+
+        var solutionString1 = " "+NumbersCopy;
+        var solutionString2 = " Target: "+totalNumber+"<br>";
+        var solutionString3 = numbersShuffled[0]+" "+signArray[0]+" "+numbersShuffled[1]+powerTest[0]+" = "+answerArray[0];
+        var solutionString4 = answerArray[0]+" "+signArray[1]+" "+numbersShuffled[2]+powerTest[1]+" = "+answerArray[1];
+        var solutionString5 = answerArray[1]+" "+signArray[2]+" "+numbersShuffled[3]+powerTest[2]+" = "+answerArray[2];
+        var solutionString6 = answerArray[2]+" "+signArray[3]+" "+numbersShuffled[4]+powerTest[3]+" = "+answerArray[3];
+        var solutionString7 = answerArray[3]+" "+signArray[4]+" "+numbersShuffled[5]+powerTest[4]+" = "+answerArray[4];
+
+        document.getElementById("text").innerHTML = solutionString1+"<br>"+solutionString2+"<br>"+solutionString3+"<br>"+solutionString4+"<br>"+solutionString5+"<br>"+solutionString6+"<br>"+solutionString7;
+
+        }
+  }
+
+
+}
+
+function on() {
+  document.getElementById("overlay").style.display = "block";
+
+  solution();
+}
+
+function off() {
+  document.getElementById("overlay").style.display = "none";
+}
+
+function openTimer() {
+  document.getElementById("overlayTimer").style.display = "block";
+  
+
+}
+
+function closeTimer() {
+  document.getElementById("overlayTimer").style.display = "none";
+  document.getElementById("tinyTimer").style.visibility = "hidden";
+}
+
+function unRandomNumbers () {
+
+var i = 1;
+
+for (i = 1; i < 7; i++) {
+
+  NumbersCopy[i-1] = document.getElementById("cell"+i).innerHTML;
+
+}
+
+}
+
+function runTimer () {
+
+ document.getElementById("tinyTimer").style.visibility = "visible";
+ document.getElementById("overlayTimer").style.display = "none";
+
+ document.getElementById("seconds").innerHTML = "0";
+ document.getElementById("minutes").innerHTML = "0";
+
+var stringInputMin = document.getElementById("timerTimeM").value;
+var stringInputSec = document.getElementById("timerTimeS").value; 
+
+ timerInputMinutes = parseInt(document.getElementById("timerTimeM").value);
+ timerInputSeconds = parseInt(document.getElementById("timerTimeS").value); 
+
+ var minutesToSeconds = timerInputMinutes * 60;
+
+ var time = minutesToSeconds + timerInputSeconds;
+ minutesToDisplay = Math.floor(time / 60);
+ var secondsToDisplay = time % 60;
+
+ if (minutesToDisplay > 9) {
+
+document.getElementById("minutes").innerHTML = minutesToDisplay;
+
+}
+else {
+
+  document.getElementById("minutes").innerHTML += ""+minutesToDisplay;
+
+}
+
+ if (secondsToDisplay > 9) {
+
+document.getElementById("seconds").innerHTML = secondsToDisplay;
+
+}
+else {
+
+  document.getElementById("seconds").innerHTML += ""+secondsToDisplay;
+
+}
+
+if (timerInputSeconds < 0 || timerInputMinutes < 0) {
+  
+  window.alert("The time entered must be positive!");
+  closeTimer();
+  openTimer();
+
+}
+else if (isNaN(stringInputSec) || isNaN(stringInputMin)) {
+  
+  window.alert("The time entered must be a number!");
+  closeTimer();
+  openTimer();
+
+}
+else if (stringInputSec == "" || stringInputMin == "") {
+  
+  window.alert("Nothing was entered in one (or both) of the slots!");
+  closeTimer();
+  openTimer();
+
+}
+else if (timerInputSeconds > 59) {
+  
+  window.alert("The seconds that you entered were greater than 59, as such your timer has been corrected from "+timerInputMinutes+":"+timerInputSeconds+" to "+minutesToDisplay+":"+secondsToDisplay);
+
+}
+
+
+
+document.getElementById("minutes").innerHTML = minutesToDisplay;
+document.getElementById("seconds").innerHTML = secondsToDisplay;
+
+intervalSec = setInterval(secondDisplay, 1000);
+intervalMinA = setTimeout(minuteDisplay, ((secondsToDisplay*1000)+1000));
+
+var r = 1;
+
+for (r = 1; r < minutesToDisplay; r++) {
+
+  intervalMinB = setTimeout(minuteDisplay, (((secondsToDisplay*1000)+1000)+(r*60000)));
+  
+}
+
+}
+
+function secondDisplay () {
+
+currentSeconds = document.getElementById("seconds").innerHTML;
+currentMinutes = document.getElementById("minutes").innerHTML;
+
+
+if (currentSeconds == 0 && currentMinutes == 0) {
+
+clearTimeout(interval);
+clearTimeout(intervalMinA);
+clearTimeout(intervalMinB);
+
+}
+else {
+
+document.getElementById("seconds").innerHTML = currentSeconds - 1;
+
+if (currentSeconds == 0 && currentMinutes != 0) {
+
+currentSeconds = document.getElementById("seconds").innerHTML = 59;
+
+}
+
+}
+
+}
+
+
+function minuteDisplay () {
+
+currentMinutes = document.getElementById("minutes").innerHTML;
+
+document.getElementById("minutes").innerHTML = currentMinutes - 1;
+
+
+}
+
+function settings () {
+
+       bigNumString = document.getElementById("bigNumRange").value;
+    if (bigNumString != "" && bigNumString != null) {
+      setCookie("bigNumNum", bigNumString, 365);
+    }
+
+      targetMin = parseInt(document.getElementById("minRange").value);
+    if (targetMin != "" && targetMin != null && targetMin != NaN && targetMin > 10 && targetMin < 1000) {
+      setCookie("targetMin", targetMin, 365);
+    }
+    else {
+
+        window.alert("Minimum target must be a number between 10 and 1000!");
+
+    }
+
+        targetMax = parseInt(document.getElementById("maxRange").value);
+    if (targetMax != "" && targetMax != null && targetMax != NaN && targetMax > 100 && targetMax < 10000) {
+      setCookie("targetMax", targetMax, 365);
+    }
+    else {
+
+        window.alert("Maximum target must be a number between 100 and 10000!");
+
+    }
+
+        operationsCookie = parseInt(document.getElementById("opDrop").value);
+    if (operationsCookie!= "" && operationsCookie != null) {
+      setCookie("opSet", operationsCookie, 365);
+    }
+
+      bigNumSelector = parseInt(document.getElementById("numDrop").value);
+    if (bigNumSelector!= "" && bigNumSelector != null) {
+      setCookie("numSet", bigNumSelector, 365);
+    }
+
+
+    
+
+
+
+reload();
+
+}
+
+
+
+function openSettings() {
+  document.getElementById("overlaySettings").style.display = "block";
+
+var bigNumSlider = document.getElementById("bigNumRange");
+var bigNumOutput = document.getElementById("bigNumRangeNum");
+
+bigNumRange.oninput = function() {
+   
+  bigNumOutput.innerHTML = this.value;
+
+}
+  
+
+}
+
+function closeSettings() {
+  document.getElementById("overlaySettings").style.display = "none";
+}
+
+function setCookie(cname, cvalue, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  var expires = "expires="+d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for(var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+
+
+</script>
+
+<style>
+
+body {
+
+  background-color: #dadada;
+
+}
+
+@font-face {
+  font-family: 'Digital';
+  src: URL('../Fonts/digital-7.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Cheveuxdange';
+  src: URL('../Fonts/Cheveuxdange.ttf') format('truetype');
+}
+
+.solutions h1 {
+
+font-size: 60px;
+  font-family: Cheveuxdange;
+  text-align: center;
+
+}
+
+.timerInput {
+
+  padding: 10px 10px;
+  margin: 0px 0px;
+  display: inline-block;
+  border: 2px solid #801515;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 20px;
+
+}
+
+
+.button {
+
+  background-color: #801515; 
+  border: none;
+  color: white;
+  margin: 20px 20px;
+  margin-left: 50px;
+  padding: 15px 32px;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+
+}
+
+.button:hover {
+
+  background-color: #561111;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+
+.table {
+
+  border: none;
+
+}
+
+.randomNumber{
+
+  background-color: white; 
+  color: black;
+  text-align: center; 
+  border: thick solid black;
+  font-family: arial;
+  font-size: 30px;
+  height: 100px;
+  width: 100px;
+
+}
+
+.arrowTableArea {
+
+  background-color: #dadada; 
+  color: white;
+  font-weight: bold;
+  text-align: center; 
+  border: none;
+  font-family: arial;
+  height: 40px;
+  width: 100px;
+
+}
+
+
+.blankTableArea {
+
+  background-color: #dadada; 
+  color: white;
+  font-weight: bold;
+  text-align: center; 
+  border: none;
+  font-family: arial;
+  height: 100px;
+  width: 110px;
+
+}
+
+.blankTableAreaExtend {
+
+  background-color: #dadada; 
+  color: white;
+  font-weight: bold;
+  text-align: center; 
+  border: none;
+  font-family: arial;
+  height: 100px;
+  width: 250px;
+
+}
+
+
+.totalDisplayArea {
+
+  background-color: white; 
+  color: black;
+  text-align: center; 
+  border: thick solid black;
+  font-family: arial;
+  font-size: 70px;
+  font-weight: bold;
+  height: 130px;
+  width: 260px;
+
+}
+
+.menuDisplayArea {
+
+  background-color:  #801515; 
+  height: 100px;
+  width: 1533px;
+  margin-top: -25px;
+  margin-left: -15px;
+  padding: 5px;
+}
+
+.menuDisplayArea p {
+
+  color: white;
+  font-family: arial;
+  font-size: 50px;
+  font-weight: bold;
+  margin-top: 30px;
+  margin-left: 80px;
+
+}
+
+.menuDisplayArea a {
+
+  color: white;
+  font-family: arial;
+  font-size: 50px;
+  cursor:  pointer;
+
+}
+
+
+
+.triangle-up {
+  width: 0;
+  height: 0;
+  border-left: 55px solid transparent;
+  border-right: 55px solid transparent;
+  border-bottom: 40px solid #801515;
+  visibility: hidden;
+}
+
+.triangle-up:hover {
+  
+  border-bottom: 40px solid #561111;
+  cursor: pointer;
+
+}
+
+.triangle-down {
+  width: 0;
+  height: 0;
+  border-left: 55px solid transparent;
+  border-right: 55px solid transparent;
+  border-top: 40px solid #801515;
+  cursor: pointer;
+  visibility: hidden;
+}
+
+.triangle-down:hover {
+  
+  border-top: 40px solid #561111;
+  cursor: pointer;
+  
+}
+
+#overlay {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+  cursor: pointer;
+}
+
+#overlayTimer {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+  cursor: pointer;
+}
+
+.text{
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 50px;
+  color: black;
+  font-family: Cheveuxdange;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+}
+
+.startButton {
+
+  background-color: #105F25; 
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  border-radius: 4px;
+ left: 100px;
+  top: -66px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+    z-index: 1;
+  position: relative;
+
+}
+
+.startButton:hover {
+
+  background-color: #004011;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.stopButton {
+
+  background-color: black; 
+  border: none;
+  color: white;
+  margin-top: 150px;
+  margin-left: 500px;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 30px;
+  font-weight: bold;
+  z-index: 1;
+  position: relative;
+
+}
+
+.stopButton:hover {
+
+  color: red;
+  cursor: pointer;
+}
+
+.tinyTimerText {
+
+color: orange;
+font-family: Digital;
+font-size: 80px;
+margin-top: 55px;
+margin-left: 30px;
+z-index: 2;
+position: absolute;;
+
+}
+
+.tinyTimerImage {
+
+z-index:  -1;
+
+}
+
+
+.timerText{
+
+  position: fixed;
+  top: 21%;
+  left: 53%;
+  font-size: 60px;
+  color: white;
+  font-weight: bold;
+  font-family: Digital;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  background: none;
+  border: none;
+}
+
+.timerImage {
+
+  position: fixed;
+  margin-left: -170px;
+}
+
+.minutes{
+
+  position: fixed;
+  top: 47%;
+  left: 38%;
+  font-size: 260px;
+  color: orange;
+  font-weight: bold;
+  font-family: Digital;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  width: 260px;  
+  background: none;
+  border: none;
+}
+
+.seconds{
+
+  position: fixed;
+  top: 47%;
+  left: 61%;
+  font-size: 260px;
+  color: orange;
+  font-weight: bold;
+  font-family: Digital;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  width: 260px;  
+  background: none;
+  border: none;
+}
+
+.tinyTimer {
+
+visibility: hidden;
+
+}
+
+.settingsText{
+
+  position: fixed;
+  top: 21%;
+  left: 53%;
+  font-size: 60px;
+  color: white;
+  font-weight: bold;
+  font-family: Digital;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  background: none;
+  border: none;
+}
+
+.settingsImage {
+
+  position: fixed;
+  margin-left: -170px;
+}
+
+
+.overlaySettings {
+  position: fixed;
+  display: none;
+  width: 110%;
+  height: 100%;
+  top: 0;
+  left: -120;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+  cursor: pointer;
+}
+
+.sliderDisplay {
+
+color: white;
+font-family: arial;
+font-weight: bold;
+position:  fixed;
+margin-left: 200px;
+margin-top: 200px;
+
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 50%;
+  height: 25px;
+  background: white;
+  outline: none;
+  opacity: 0.8;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  position:  fixed;
+z-index: 3;
+}
+
+.drop {
+  -webkit-appearance: none;
+  width: 50%;
+  height: 25px;
+  outline: none;
+  opacity: 0.8;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  position:  fixed;
+z-index: 3;
+font-size: 15px;
+padding-left: 20px;
+color: #561111;
+font-weight:  bold;
+text-align:  center;
+
+}
+
+.drop:hover{
+  opacity: 1;
+}
+
+.inputRange {
+  -webkit-appearance: none;
+  width: 50%;
+  height: 25px;
+  outline: none;
+  opacity: 0.8;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  position:  fixed;
+z-index: 3;
+font-size: 15px;
+
+color: #561111;
+font-weight:  bold;
+text-align:  center;
+
+}
+
+.inputRange:hover{
+  opacity: 1;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #561111;
+  cursor: pointer;
+}
+
+.inputRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #561111;
+  cursor: pointer;
+}
+
+.drop::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #561111;
+  cursor: pointer;
+}
+
+.saveButton {
+
+  background-color: white; 
+  border: thick #561111 solid;
+  color: black;
+  font-weight:  bold;
+  padding: 15px 32px;
+  border-radius: 4px;
+ left: 500px;
+ top: 330px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+    z-index: 1;
+  position: relative;
+
+}
+
+.settingsInput {
+
+  padding: 10px 10px;
+  margin: 0px 0px;
+  display: inline-block;
+  border: 2px solid #801515;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 20px;
+
+}
+
+.stopButtonSettings {
+
+  background-color: transparent; 
+  border: none;
+  color: white;
+  margin-top: 150px;
+  margin-left: 500px;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 30px;
+  font-weight: bold;
+  z-index: 1;
+  position: relative;
+
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slideOutput {
+  width: 100%;
+  position:  fixed;
+z-index:  3;
+}
+
+.stopButtonSettings:hover {
+
+  color: #561111;
+  cursor: pointer;
+}
+
+.saveButton:hover {
+
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #561111;
+}
+
+
+
+
+</style>
+
+</head>
+
+<body onload = "onloadFunc();">
+
+  <div class="headingDiv">
+
+   
+    <div class="menuDisplayArea" id="menu"><p id="heading"><a onclick="openSettings();"><i class="fas fa-cog"></i></a><a onclick="openRules();"><i style= "margin-left: 20px;"class="fas fa-book-open"></i></a>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Countdown Numbers &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<a href="../Letters"><i class="fas fa-sort-alpha-up"></i></a></p></div>
+    
+
+
+
+
+  </div>
+
+  <center>
+
+  <div id="countdownDiv" class="countdownDiv">
+
+  <br>
+
+    <table class="table" border="1">
+
+    <tr id= "totalNum">
+   <td class="blankTableAreaExtend" id="totalNum"></td>
+    <td class="blankTableAreaExtend" id="totalNum"></td>
+    <td class="totalDisplayArea" id="totalNum"><p id="total"></p></td>
+     <td class="blankTableAreaExtend" id="totalNum"></td>
+    <td class="blankTableAreaExtend"><div id="tinyTimer" class="tinyTimer"><p class= "tinyTimerText"> <span id = "minutes">0</span>&ensp;<span id = "seconds">0</span></p><img src="../Overlays/overlayTimer.png" class="tinyTimerImage" style=" height: 200%;"></td>
+    </tr>
+
+    </table>
+
+  <br>
+
+    <table class="table" border="1">
+
+    <tr id="bigNumArrow">
+    <td class="arrowTableArea"><div id="upArrow1" onclick="keypressUp(1);" class="triangle-up" ></div></td>
+    <td class="arrowTableArea"><div id="upArrow2" onclick="keypressUp(2);" class="triangle-up" ></div></td>
+    <td class="arrowTableArea"><div id="upArrow3" onclick="keypressUp(3);" class="triangle-up" ></div></td>
+    <td class="arrowTableArea"><div id="upArrow4" onclick="keypressUp(4);" class="triangle-up" ></div></td>
+    <td class="arrowTableArea"><div id="upArrow5" onclick="keypressUp(5);" class="triangle-up" ></div></td>
+    <td class="arrowTableArea"><div id="upArrow6" onclick="keypressUp(6);" class="triangle-up" ></div></td>
+  
+    </tr>
+
+    <tr id= "numbersRow">
+    <td class="randomNumber" id="cell1"></td>
+    <td class="randomNumber" id="cell2"></td>
+    <td class="randomNumber" id="cell3"></td>
+    <td class="randomNumber" id="cell4"></td>
+    <td class="randomNumber" id="cell5"></td>
+    <td class="randomNumber" id="cell6"></td>
+    
+    </tr>
+
+    <tr id="smallNumArrow">
+    <td class="arrowTableArea"><div id="downArrow1" onclick="keypressDown(1);" class="triangle-down"></div></td>
+    <td class="arrowTableArea"><div id="downArrow2" onclick="keypressDown(2);" class="triangle-down"></div></td>
+    <td class="arrowTableArea"><div id="downArrow3" onclick="keypressDown(3);" class="triangle-down"></div></td>
+    <td class="arrowTableArea"><div id="downArrow4" onclick="keypressDown(4);" class="triangle-down"></div></td>
+    <td class="arrowTableArea"><div id="downArrow5" onclick="keypressDown(5);" class="triangle-down"></div></td>
+    <td class="arrowTableArea"><div id="downArrow6" onclick="keypressDown(6);" class="triangle-down"></div></td>
+   
+
+    </tr>
+
+    </table>
+
+  <br>
+
+    <table class="table" border="1">
+
+    <tr id= "buttonsRow">
+    <td class="blankTableArea" style="width: 260px;" ><button class="button" onclick="reload();">New Game <i style ="margin-left: 5px;" class="fas fa-redo"></i></button></td>
+    <td class="blankTableArea" style="width: 260px;" ><button class="button" onclick="generateTotalNum();">New Target <i style ="margin-left: 5px;" class="fas fa-bullseye"></i></button></td>
+    <td class="blankTableArea" style="width: 260px;" ><button class="button" onclick="openTimer();">Set Timer <i style ="margin-left: 5px;" class="fas fa-hourglass-half"></i></button></td>
+    <td class="blankTableArea" style="width: 260px;"><button class="button" onclick="on();">Show Solution <i style ="margin-left: 5px;" class="fas fa-pencil-alt"></i></button></td>
+    </tr>
+
+    </table>
+
+  <br>
+
+  </div>
+  
+  <div id="overlay" onclick="off()">
+  <img src="../Overlays/overlayNote.png">
+  <p id="text" class="text"></p>
+
+</div>
+
+  <div id="overlayTimer">
+  <button onclick="runTimer();" class= "startButton">START</button>
+  <img src="../Overlays/overlayTimer.png" class="timerImage" style=" margin-top: 40px; height: 90%;">
+  <input class="minutes" dir="rtl" maxlength="2" placeholder="00" id="timerTimeM"></input>
+  <input class="seconds" dir="rtl" maxlength="2"placeholder="00" id="timerTimeS"></input>
+
+  <button onclick="closeTimer();" class= "stopButton">X</button>
+
+</div>
+
+<div id="overlaySettings" class="overlaySettings">
+
+    <div class="sliderOutput">
+
+      <p  class ="sliderDisplay"  style ="margin-top: 270px; margin-left: 600px; z-index: 3;">Range of Target:</p>
+  
+  <input type="text" class="inputRange" value="100" style ="margin-top: 300px; border: thick #561111 solid; margin-left: -250px; width: 100px; height: 35px; " id="minRange"> <input type="text" class="inputRange" value = "1000" style ="margin-top: 300px; border: thick #561111 solid; margin-left: -100px; width: 100px; height: 35px; " id="maxRange">
+  
+    <p  class ="sliderDisplay"  style ="margin-top: 370px; margin-left: 600px; z-index: 3;">Maximum Number of Big Numbers: <span id="bigNumRangeNum">3</span></p>
+
+      <input type="range" min="1" max="6" value="3" class="slider" style ="border: thick #561111 solid; margin-top: 400px; margin-left: -250px; width: 300px; "id="bigNumRange">
+
+        <p  class ="sliderDisplay"  style ="margin-top: 270px; margin-left: 960px; z-index: 3;">Solution Operations:</p>
+  
+    <select class="drop" id="opDrop" style ="border: thick #561111 solid; margin-top: 300px; margin-left: 110px; width: 200px; height: 35px;" >
+  <option value="1">&plus; , &minus; , &times;, &divide;</option>
+  <option value="2">&plus; , &minus; , &times;</option>
+  <option value="3">&plus; , &minus; , &times;, &divide;, ^</option>
+   <option value="4">&plus; , &minus; , &times;, &divide;, ^, mod</option>
+
+
+</select>
+
+  
+    <p  class ="sliderDisplay"  style ="margin-top: 370px; margin-left: 960px; z-index: 3;">Big Numbers:</p>
+
+      <select class="drop" id="numDrop" value="1" style ="border: thick #561111 solid; margin-top: 400px; margin-left: 110px; width: 200px; height: 35px;" >
+  <option value="1">25, 50, 75, 100</option>
+  <option value="2">12, 36, 62, 87</option>
+  <option value="3">47, 72, 97, 122</option>
+
+</select>
+
+  </div>
+  <button onclick="settings();" class= "saveButton">SAVE CHANGES</button>
+  <img src="../Overlays/overlaySettings2.png" class="settingsImage" style=" margin-top: 40px; height: 90%;">
+  <button onclick="closeSettings();" class= "stopButtonSettings">X</button>
+
+</div>
+
+  </center>
+
+</body>
+</html>
